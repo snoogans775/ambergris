@@ -1,28 +1,63 @@
 const displayData = async () => {
-	let data = await getCovidJSON();
+	let dataset = await getCovidJSON();
+	let recentData = dataset[0].data.rows;
+	console.log(recentData);
 	
-	let container = newElement('div', 'container',)
+	let header = newElement({element:'div', class: 'header'});
+	header.append(
+		newElement({element: 'div', text: 'Country'}),
+		newElement({element: 'div', text: 'Cases Per Capita'})	
+	);
 	
-	for ( item of data ) {
-		let entry = newElement('div', 'entry');
-		let countryName = newElement('div', 'country-name', item.country);
-		let casesPerMil = newElement('div', 'text', item.case_per_mill_pop);
-		let flag = newElement('img', 'flag');
-		flag.setAttribute('src', item.flag);
-		
-		let progressBar = newElementObject({
+	let container = newElement({element: 'div', class: 'container'});
+	
+	//Global numbers for computations
+	let worldCases = toNum(recentData[0].total_cases);
+	console.log(`World Cases: ${worldCases}`);
+	
+	//Create rows
+	for ( item of recentData ) {
+		//let entry = newElement({element: 'div', class: 'entry'});
+		let flag = newElement({element: 'img', class: 'flag', source: item.flag});
+		let countryName = newElement({
+			element: 'div', 
+			class: 'country-name', 
+			text: item.country,
+		});
+		let cases = newElement({
 			element: 'div',
-			class: 'progress-bar'
-		}
-		);
-		progressBar.style.width = 100;
-
-		entry.append(flag, countryName, casesPerMil, progressBar);
-		container.append(entry);
+			class: 'text', 
+			text: item.cases_per_mill_pop
+		});
+		let bar = newElement({
+			element: 'span',
+			class: 'cases-bar',
+		});
+		//FIXME: Refactor newElement styling (Kevin: 5/11/2020 11:52:00)
+		let casesPerMill = toNum(item.cases_per_mill_pop);
+		let width = toPercent(casesPerMill, worldCases);
+		console.log(`${item.country}: ${width}`)
+		bar.style.width = `${width}%`;
+		cases.appendChild(bar);
+		container.append(flag, countryName, bar);
 	}
 	
-	document.body.append(container);
+	let root = document.querySelector('#root');
+	root.append(header);
+	root.append(container);
 }
+
+//Computation functions
+const toNum = (str) => {
+	let result = parseInt(str.replace(',', ''));
+	return result;
+}
+
+const toPercent = (value, total) => {
+	let result = Math.floor((value / total) * 100);
+	return result;
+}
+
 
 //Requests made to server
 const getCovidJSON = async () => {
@@ -32,17 +67,10 @@ const getCovidJSON = async () => {
 }
 
 // Element functions
-const newElement = (html, cl, text) => {
-	let ele = document.createElement(html);
-	ele.setAttribute('class', cl);
-	ele.textContent = text;
-	return ele;
-}
-
-const newElementObject = (obj) => {
+var newElement = (obj) => {
 	let ele = document.createElement(obj.element);
-	ele.setAttribute('src', obj.source);
 	ele.setAttribute('class', obj.class);
+	if(typeof(obj.source) !== "undefined") {ele.setAttribute('src', obj.source)};
 	ele.textContent = obj.text;
 	return ele;
 }

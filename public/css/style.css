@@ -1,0 +1,39 @@
+body, html {
+	height: 100%;
+	weight: 100%;
+}
+
+body {
+	height: 100%;
+	width: 100%;
+	display: table;
+  background: #FFFFCC;
+  font-family: 'Arial';
+	float: left;
+}
+
+div {
+	background: #FFFFDD;
+  padding: 0.1rem;
+	margin: 0.5rem;
+	float:left;
+}
+
+img {
+	max-height: 50%;
+	width: auto;
+	float: left;
+}
+
+div.entry {
+	height: 2rem;
+}
+
+div.entry:only-child {
+	float: left;
+}
+
+div.progress-bar {
+	background: #BB99A2;
+	height: 50%;
+}

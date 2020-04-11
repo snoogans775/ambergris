@@ -3,21 +3,23 @@ const displayData = async () => {
 	let recentData = dataset[0].data.rows;
 	console.log(recentData);
 	
-	let header = newElement({element:'div', class: 'header'});
-	header.append(
-		newElement({element: 'div', text: 'Country'}),
-		newElement({element: 'div', text: 'Cases Per Capita'})	
-	);
-	
-	let container = newElement({element: 'div', class: 'container'});
+	//Create chart
+	let header = createHeader();
+	let container = newElement({
+		element: 'div', 
+		class: 'container'
+	});
 	
 	//Global numbers for computations
 	let worldCases = toNum(recentData[0].total_cases);
 	
-	//Create rows
+	//Insert rows
 	for ( item of recentData ) {
-		//let entry = newElement({element: 'div', class: 'entry'});
-		let flag = newElement({element: 'img', class: 'flag', source: item.flag});
+		let flag = newElement({
+			element: 'img', 
+			class: 'flag', 
+			source: item.flag
+		});
 		let countryName = newElement({
 			element: 'div', 
 			class: 'country-name', 
@@ -36,7 +38,7 @@ const displayData = async () => {
 		let casesPerMill = toNum(item.cases_per_mill_pop);
 		let width = toPercent(casesPerMill, worldCases);
 		bar.style.width = `${width}%`;
-		cases.appendChild(bar);
+		
 		container.append(flag, countryName, bar);
 	}
 	
@@ -70,6 +72,16 @@ var newElement = (obj) => {
 	if(typeof(obj.source) !== "undefined") {ele.setAttribute('src', obj.source)};
 	ele.textContent = obj.text;
 	return ele;
+}
+
+var createHeader = () => {
+	let header = newElement({element:'div', class: 'header'});
+	header.append(
+		newElement({element: 'div', text: 'Country'}),
+		newElement({element: 'div', text: 'Cases Per Capita'})	
+	);
+	
+	return header;
 }
 
 displayData();

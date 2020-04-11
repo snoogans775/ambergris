@@ -4,36 +4,53 @@ body, html {
 }
 
 body {
-	height: 100%;
-	width: 100%;
-	display: table;
-  background: #FFFFCC;
+	display: grid;
+  background: #DDFFFF;
   font-family: 'Arial';
-	float: left;
 }
 
-div {
-	background: #FFFFDD;
-  padding: 0.1rem;
-	margin: 0.5rem;
-	float:left;
+#root {
+	width: 70%;
+	margin: 0 auto;
+	padding: 0.5rem;
 }
 
-img {
-	max-height: 50%;
-	width: auto;
-	float: left;
+.entry {
+	height: 1.5rem;
 }
 
-div.entry {
-	height: 2rem;
+.header {
+	background: #FFFFFF;
+	display: grid;
+	grid-template-columns: [name] 20% [text] 40%;
+	margin-bottom: 0.2rem;
+	padding: 0.5rem;
+
 }
 
-div.entry:only-child {
-	float: left;
+.container {
+	display: grid;
+	grid-template-columns: [flag] 5% [name] 15% [text] 40%;
+	grid-template-rows: auto;
+	row-gap: 0.3em;
+	padding: 0.5rem;
+}
+.entry {
 }
 
-div.progress-bar {
+.flag {
+	height: 0.8rem;
+	width: 1.2rem;
+}
+.country {
+	
+}
+.chart {
+	
+}
+
+.cases-bar {
 	background: #BB99A2;
-	height: 50%;
+	height: 0.2em;
+	padding: 0.1em;
 }

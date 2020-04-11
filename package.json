@@ -1,0 +1,21 @@
+{
+  "name": "covid",
+  "version": "1.0.0",
+  "description": "a covid tracker based on system geolocation",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "covid-19",
+    "api",
+    "experimental"
+  ],
+  "author": "Kevin Fredericks",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nedb": "^1.8.0",
+    "node-fetch": "^2.6.0"
+  }
+}

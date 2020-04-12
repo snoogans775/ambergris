@@ -1,17 +1,19 @@
 const express = require('express');
 const Datastore = require('nedb');
 const fetch = require('node-fetch');
+const fs = require('fs');
 
 //Initialize express server
 const app = express();
 app.listen(3001, () => console.log('listening @ 3001'));
 app.use(express.static('public'));
-app.use(express.json({limi: '1mb'}));
+app.use(express.json({limit: '1mb'}));
 
 //Initialize neDB
 const database = new Datastore('database.db');
 database.loadDatabase();
 
+//Global API Methods
 //Generic GET request
 app.get('/covidGlobal', async (request, response) => {
 	database.find({}, (err, data) => {
@@ -69,8 +71,17 @@ var checkRecentEntry = (result) => {
 	});
 }
 
+//OECD Local File Methods
+//Generic GET request
+app.get('/oecd', async (request, response) => {
+	var fileName = 'OECD-wealth.csv';
+	fs.readFile(fileName, "utf8", (err, data) => {
+		console.log(`Request made for ${fileName}`);
+		response.data;
+	});
+})
+
 // Update database at interval of 1 minute
-updateDatabase();
 setInterval( async () => {
 	updateDatabase();
 }, 60 * 1000);

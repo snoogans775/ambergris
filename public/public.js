@@ -71,6 +71,12 @@ const getGlobalJSON = async () => {
 	return data;
 }
 
+const getWealthCSV = async () => {
+	const response = await fetch('/oecd');
+	const data = await response;
+	console.log(response);
+}
+
 // Element functions
 var newElement = (obj) => {
 	let ele = document.createElement(obj.element);
@@ -91,5 +97,6 @@ var createHeader = () => {
 	return header;
 }
 
+getWealthCSV();
 displayData();
 

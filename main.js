@@ -22,6 +22,7 @@ app.get('/covidGlobal', async (request, response) => {
 			return;
 		}
 		response.json(data);
+		console.log('Testing type: ' + data);
 	})
 })
 
@@ -54,16 +55,16 @@ var updateDatabase = async () => {
 
 var checkRecentEntry = (result) => {
 	let apiDate = result.data.last_update;
-	console.log(`Most recent API entry: ${apiDate}`);
 	
 	database.find({}, (err, doc) => {
 		let dbDate = doc[0].data.last_update;
 		let msg = '';
-		if (apiDate === dbDate) {
+		if (apiDate == dbDate) {
 			msg = `Match found for database entry: ${dbDate}`;
 		} else {
 			//FIXME: check for change in date format (Kevin: 05/11/20 11:38:00)
 			msg =`Updating database with data from ${apiDate}`;
+			msg += `\n Most recent API entry: ${dbDate}`;
 			database.insert(result);
 		};
 		
@@ -74,14 +75,15 @@ var checkRecentEntry = (result) => {
 //OECD Local File Methods
 //Generic GET request
 app.get('/oecd', async (request, response) => {
-	var fileName = 'OECD-wealth.csv';
-	fs.readFile(fileName, "utf8", (err, data) => {
-		console.log(`Request made for ${fileName}`);
-		response.data;
+	let file = 'data/result.json';
+	console.log(`${file} requested.`);
+	fs.readFile(file, 'utf8', (err, data) => {
+		response.json(JSON.parse(data));
 	});
 })
 
 // Update database at interval of 1 minute
+updateDatabase(); //Update on init
 setInterval( async () => {
 	updateDatabase();
 }, 60 * 1000);

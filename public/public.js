@@ -73,8 +73,8 @@ const getGlobalJSON = async () => {
 
 const getWealthCSV = async () => {
 	const response = await fetch('/oecd');
-	const data = await response;
-	console.log(response);
+	const data = await response.json();
+	console.log(data);
 }
 
 // Element functions

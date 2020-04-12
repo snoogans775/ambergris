@@ -30,12 +30,14 @@ body {
 
 .container {
 	display: grid;
-	grid-template-columns: [flag] 5% [name] 15% [text] 40%;
+	grid-template-columns: [entry] 100%;
 	grid-template-rows: auto;
 	row-gap: 0.3em;
 	padding: 0.5rem;
 }
 .entry {
+	grid-template-columns: [flag] 5% [name] 15% [text] 40%;
+	display: grid;
 }
 
 .flag {

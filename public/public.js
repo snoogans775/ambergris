@@ -1,5 +1,5 @@
 const displayData = async () => {
-	let dataset = await getCovidJSON();
+	let dataset = await getGlobalJSON();
 	let recentData = dataset[0].data.rows;
 	console.log(recentData);
 	
@@ -15,6 +15,10 @@ const displayData = async () => {
 	
 	//Insert rows
 	for ( item of recentData ) {
+		let entry = newElement({
+			element: 'div', 
+			class: 'entry'
+		});
 		let flag = newElement({
 			element: 'img', 
 			class: 'flag', 
@@ -38,8 +42,10 @@ const displayData = async () => {
 		let casesPerMill = toNum(item.cases_per_mill_pop);
 		let width = toPercent(casesPerMill, worldCases);
 		bar.style.width = `${width}%`;
+		bar.id = `${item.country.toLowerCase()}-bar`;
 		
-		container.append(flag, countryName, bar);
+		entry.append(flag, countryName, bar);
+		container.append(entry);
 	}
 	
 	let root = document.querySelector('#root');
@@ -59,8 +65,8 @@ const toPercent = (value, total) => {
 }
 
 //Requests made to server
-const getCovidJSON = async () => {
-	const response = await fetch('/covid');
+const getGlobalJSON = async () => {
+	const response = await fetch('/covidGlobal');
 	const data = await response.json();
 	return data;
 }
@@ -71,6 +77,7 @@ var newElement = (obj) => {
 	ele.setAttribute('class', obj.class);
 	if(typeof(obj.source) !== "undefined") {ele.setAttribute('src', obj.source)};
 	ele.textContent = obj.text;
+	ele.onclick = obj.onclick;
 	return ele;
 }
 

@@ -13,7 +13,7 @@ const database = new Datastore('database.db');
 database.loadDatabase();
 
 //Generic GET request
-app.get('/covid', async (request, response) => {
+app.get('/covidGlobal', async (request, response) => {
 	database.find({}, (err, data) => {
 		if (err) {
 			response.end();
@@ -24,7 +24,7 @@ app.get('/covid', async (request, response) => {
 })
 
 //Generic POST request
-app.post('/covid'), async (request, response) => {
+app.post('/covidGlobal'), async (request, response) => {
 	const data = request.body;
 	try {
 		data.timestamp = Date.now();

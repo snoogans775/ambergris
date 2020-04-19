@@ -3,6 +3,8 @@ const displayData = async () => {
 	let recentData = dataset[0].data.rows;
 	console.log(recentData);
 	
+	getAllCasesPerCapita(recentData);
+	
 	//Create chart
 	let header = createHeader();
 	let container = newElement({
@@ -11,7 +13,7 @@ const displayData = async () => {
 	});
 	
 	//Global numbers for computations
-	let worldCases = toNum(recentData[0].total_cases);
+	let worldCases = toNum(recentData[0].cases_per_mill_pop);
 	
 	//Insert rows
 	for ( item of recentData ) {
@@ -32,17 +34,20 @@ const displayData = async () => {
 		let cases = newElement({
 			element: 'div',
 			class: 'text', 
-			text: item.cases_per_mill_pop
+			text: item.total_cases
 		});
 		let bar = newElement({
 			element: 'span',
 			class: 'cases-bar',
 		});
 		//FIXME: Refactor newElement styling (Kevin: 5/11/2020 11:52:00)
-		let casesPerMill = toNum(item.cases_per_mill_pop);
-		let width = toPercent(casesPerMill, worldCases);
+		let localCases = toNum(item.cases_per_mill_pop);
+		let width = toPercent(localCases, worldCases);
 		bar.style.width = `${width}%`;
 		bar.id = `${item.country.toLowerCase()}-bar`;
+		
+		//text overlay
+		bar.append(cases);
 		
 		entry.append(flag, countryName, bar);
 		container.append(entry);
@@ -54,14 +59,23 @@ const displayData = async () => {
 }
 
 //Computation functions
-const toNum = (str) => {
-	let result = parseInt(str.replace(',', ''));
+let toNum = (str) => {
+	try {
+		let result = parseInt(str.replace(',', ''));
+		return result;
+	} catch (err) {
+		console.log(err);
+	}
+}
+
+let toPercent = (value, total) => {
+	let result = Math.floor( (value / total) * 100 );
 	return result;
 }
 
-const toPercent = (value, total) => {
-	let result = Math.floor((value / total) * 100);
-	return result;
+let getAllCasesPerCapita = (data) => {
+	let item = data[0].cases.per_mill_pop;
+	console.log( item );
 }
 
 //Requests made to server

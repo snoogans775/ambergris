@@ -43,14 +43,14 @@ app.get('/us', async (request, response) => {
 //Generic GET request
 app.get('/oecd', async (request, response) => {
 	let file = 'data/oecd-wealth.json';
-	console.log(`${file} requested.`);
+	console.log(`${file} requested`);
 	fs.readFile(file, 'utf8', (err, data) => {
 		response.json(JSON.parse(data));
 	});
 })
 
 //External API methods
-let getWorldData = (option = 1) => {
+let getWorldDataUrl = (option = 1) => {
 	//Get the last update from most recent db entry
 	let url = "https://corona-virus-stats.herokuapp.com/api/v1/cases/";
 	let queries = ['general-stats', 'countries-search'];
@@ -59,16 +59,22 @@ let getWorldData = (option = 1) => {
 	return url;
 }
 
-let getUsData = (option) => {
+let getUsDataUrl = (option) => {
 	let url = "https://covidtracking.com/api/v1/states/daily.json";
 	
 	return url;
 }
 
+//Replace current cache of US data
+let updateUsDatabase = async () => {
+	let url = getUsDataUrl;
+	console.log(`Fetching ${url}`);
+}
+
 //Cache database with new API result from world API
 let updateWorldDatabase = async () => {
 	//Get the last update from most recent db entry
-	let url = getWorldData();
+	let url = getWorldDataUrl();
 	console.log(`Fetching ${url}`);
 	let requestOptions = {
 		method: 'GET',
@@ -80,7 +86,6 @@ let updateWorldDatabase = async () => {
 }
 
 let checkRecentEntry = (result) => {
-	console.log(result);
 	let apiDate = result.data.last_update;
 	
 	worldDatabase.find({}, (err, doc) => {

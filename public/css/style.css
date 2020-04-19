@@ -36,8 +36,8 @@ body {
 	padding: 0.5rem;
 }
 .entry {
-	grid-template-columns: [flag] 5% [name] 15% [text] 40%;
 	display: grid;
+	grid-template-columns: [flag] 5% [name] 15% [text] 40%;
 }
 
 .flag {

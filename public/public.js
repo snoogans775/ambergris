@@ -1,5 +1,5 @@
 const displayData = async () => {
-	let dataset = await getGlobalJSON();
+	let dataset = await getWorldJSON();
 	let recentData = dataset[0].data.rows;
 	console.log(recentData);
 	
@@ -65,8 +65,8 @@ const toPercent = (value, total) => {
 }
 
 //Requests made to server
-const getGlobalJSON = async () => {
-	const response = await fetch('/covidGlobal');
+const getWorldJSON = async () => {
+	const response = await fetch('/world');
 	const data = await response.json();
 	return data;
 }

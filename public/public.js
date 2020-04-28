@@ -1,9 +1,9 @@
 const displayData = async () => {
 	let dataset = await getWorldJSON();
-	let recentData = dataset[0].data.rows;
+	let recentData = dataset;
 	console.log(recentData);
 	
-	getAllCasesPerCapita(recentData);
+	getMaxCasesPerCapita(recentData);
 	
 	//Create chart
 	let header = createHeader();
@@ -73,9 +73,13 @@ let toPercent = (value, total) => {
 	return result;
 }
 
-let getAllCasesPerCapita = (data) => {
-	let item = data[0].cases.per_mill_pop;
-	console.log( item );
+let getMaxCasesPerCapita = (data) => {
+	let item = data[0].cases_per_mill_pop;
+	let result = data.map( item => item.cases_per_mill_pop );
+	let maxValue = result.reduce( (a,b) => {
+		return Math.max(a,b);
+	})
+	console.log( result );
 }
 
 //Requests made to server
@@ -85,10 +89,16 @@ const getWorldJSON = async () => {
 	return data;
 }
 
-const getWealthCSV = async () => {
+const getUsaJSON = async () => {
+	const response = await fetch('/usa');
+	const data = await response.json();
+	return data;
+}
+
+const getWealthJSON = async () => {
 	const response = await fetch('/oecd');
 	const data = await response.json();
-	console.log(data);
+	return data;
 }
 
 // Element functions
@@ -111,6 +121,5 @@ var createHeader = () => {
 	return header;
 }
 
-getWealthCSV();
 displayData();
 

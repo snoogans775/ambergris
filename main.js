@@ -19,17 +19,18 @@ usDatabase.loadDatabase();
 //Internal API Methods
 //Global data GET request
 app.get('/world', async (request, response) => {
-	worldDatabase.find({}, (err, data) => {
+	worldDatabase.findOne({}, (err, data) => {
 		if (err) {
 			response.end();
 			return;
 		}
 		response.json(data);
+		console.log(data);
 	})
 })
 
 //USA data GET request
-app.get('/us', async (request, response) => {
+app.get('/usa', async (request, response) => {
 	usDatabase.find({}, (err, data) => {
 		if (err) {
 			response.end();
@@ -50,16 +51,16 @@ app.get('/oecd', async (request, response) => {
 })
 
 //External API methods
-let getWorldDataUrl = (option = 1) => {
+let getWorldDataUrl = (option = 0) => {
 	//Get the last update from most recent db entry
-	let url = "https://corona-virus-stats.herokuapp.com/api/v1/cases/";
-	let queries = ['general-stats', 'countries-search'];
+	let url = "https://api.covid19api.com/";
+	let queries = ['summary'];
 	url += queries[option];
 	
 	return url;
 }
 
-let getUsDataUrl = (option) => {
+let getUsaDataUrl = (option) => {
 	let url = "https://covidtracking.com/api/v1/states/daily.json";
 	
 	return url;
@@ -80,32 +81,42 @@ let updateWorldDatabase = async () => {
 		method: 'GET',
 		redirect: 'follow'
 	};
-	const res = await fetch(url, requestOptions);
-	const result = await res.json();
-	checkRecentEntry(result);
+	
+	try {
+		const res = await fetch(url, requestOptions);
+		const result = await res.json();
+		setInterval(mergeRecentEntry(result), 1000 * 1);
+		
+	} catch (err) {
+		console.log( err );
+	}
 }
 
-let checkRecentEntry = (result) => {
-	let apiDate = result.data.last_update;
+let mergeRecentEntry =  (result) => {
+	let apiDate = result.Date;
+	console.log(`Api Date: ${apiDate}`);
 	
-	worldDatabase.find({}, (err, doc) => {
-		let dbDate = doc[0].data.last_update;
+	worldDatabase.find({Date: apiDate}, (err, doc) => {
+		try {
+		let dbDate = doc[0].Date;
 		let msg = '';
 		if (apiDate == dbDate) {
-			msg = `Match found for world data entry: ${dbDate}`;
+			msg = `Match found in db for world data entry: ${dbDate}`;
 		} else {
 			//FIXME: check for change in date format (Kevin: 05/11/20 11:38:00)
 			msg =`Updating world data with data from ${apiDate}`;
-			msg += `\n Most recent API entry: ${dbDate}`;
+			msg += `\n Most recent database entry: ${dbDate}`;
 			worldDatabase.insert(result);
 		};
 		
 		console.log(msg);
+	} catch (err) {
+		console.log(err);
+	}
 	});
 }
-
 // Update database at interval of 10 minutes
-updateWorldDatabase(); //Update on init
+//updateWorldDatabase(); //Update on init
 setInterval( async () => {
 	updateWorldDatabase();
 }, 60 * 10000);

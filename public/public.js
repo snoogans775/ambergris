@@ -38,16 +38,16 @@ const displayData = async () => {
 		});
 		let bar = newElement({
 			element: 'span',
-			class: 'cases-bar',
+			class: 'cases-bar'
 		});
 		//FIXME: Refactor newElement styling (Kevin: 5/11/2020 11:52:00)
 		let localCases = item.TotalConfirmed;
-		let width = toPercent(localCases, worldCases);
+		let width = (localCases / worldCases) * 1000;
 		bar.style.width = `${width}%`;
 		bar.id = `${item.Country.toLowerCase()}-bar`;
 		
 		//text overlay
-		bar.append(cases);
+		bar.append(localCases);
 		
 		entry.append(flag, countryName, bar);
 		container.append(entry);
@@ -114,7 +114,7 @@ var createHeader = () => {
 	let header = newElement({element:'div', class: 'header'});
 	header.append(
 		newElement({element: 'div', text: 'Country'}),
-		newElement({element: 'div', text: 'Cases Per Capita'})	
+		newElement({element: 'div', text: 'Cases'})	
 	);
 	
 	return header;

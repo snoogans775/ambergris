@@ -22,7 +22,7 @@ body {
 .header {
 	background: #FFFFFF;
 	display: grid;
-	grid-template-columns: [name] 20% [text] 40%;
+	grid-template-columns: [name] 35% [text] 40%;
 	margin-bottom: 0.2rem;
 	padding: 0.5rem;
 
@@ -37,7 +37,7 @@ body {
 }
 .entry {
 	display: grid;
-	grid-template-columns: [flag] 5% [name] 15% [text] 40%;
+	grid-template-columns: [flag] 5% [name] 30% [text] 40%;
 }
 
 .flag {
@@ -48,9 +48,8 @@ body {
 	
 }
 .chart {
-	
-}
 
+}
 .cases-bar {
 	background: #BB99A2;
 	height: 0.2em;

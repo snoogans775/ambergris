@@ -119,7 +119,7 @@ let mergeRecentEntry =  (result) => {
 //updateWorldDatabase(); //Update on init
 setInterval( async () => {
 	updateWorldDatabase();
-}, 60 * 10000);
+}, 240 * 1000);
 
 
 

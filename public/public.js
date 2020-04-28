@@ -3,7 +3,7 @@ const displayData = async () => {
 	let recentData = dataset;
 	console.log(recentData);
 	
-	getMaxCasesPerCapita(recentData);
+	const maxCases = getMaxCases(recentData.Countries);
 	
 	//Create chart
 	let header = createHeader();
@@ -13,10 +13,10 @@ const displayData = async () => {
 	});
 	
 	//Global numbers for computations
-	let worldCases = toNum(recentData[0].cases_per_mill_pop);
+	let worldCases = recentData.Global.TotalConfirmed;
 	
 	//Insert rows
-	for ( item of recentData ) {
+	for ( item of recentData.Countries ) {
 		let entry = newElement({
 			element: 'div', 
 			class: 'entry'
@@ -24,27 +24,27 @@ const displayData = async () => {
 		let flag = newElement({
 			element: 'img', 
 			class: 'flag', 
-			source: item.flag
+			source: item.Country
 		});
 		let countryName = newElement({
 			element: 'div', 
 			class: 'country-name', 
-			text: item.country,
+			text: item.Country
 		});
 		let cases = newElement({
 			element: 'div',
 			class: 'text', 
-			text: item.total_cases
+			text: item.TotalConfirmed
 		});
 		let bar = newElement({
 			element: 'span',
 			class: 'cases-bar',
 		});
 		//FIXME: Refactor newElement styling (Kevin: 5/11/2020 11:52:00)
-		let localCases = toNum(item.cases_per_mill_pop);
+		let localCases = item.TotalConfirmed;
 		let width = toPercent(localCases, worldCases);
 		bar.style.width = `${width}%`;
-		bar.id = `${item.country.toLowerCase()}-bar`;
+		bar.id = `${item.Country.toLowerCase()}-bar`;
 		
 		//text overlay
 		bar.append(cases);
@@ -73,13 +73,12 @@ let toPercent = (value, total) => {
 	return result;
 }
 
-let getMaxCasesPerCapita = (data) => {
-	let item = data[0].cases_per_mill_pop;
-	let result = data.map( item => item.cases_per_mill_pop );
+let getMaxCases = (data) => {
+	let result = data.map( item => item.TotalConfirmed );
 	let maxValue = result.reduce( (a,b) => {
 		return Math.max(a,b);
 	})
-	console.log( result );
+	console.log( maxValue );
 }
 
 //Requests made to server

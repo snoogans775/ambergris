@@ -8,7 +8,7 @@ historical analysis and statistical analysis.
 
 - Dependencies -
 Node.js (v10+)
-NedB or MongoDB
+NeDB or MongoDB
 ECMAScript 6+
 
 ##Installation

@@ -61,16 +61,12 @@ let getWorldDataUrl = (option = 0) => {
 }
 
 let getUsaDataUrl = (option) => {
-	let url = "https://covidtracking.com/api/v1/states/daily.json";
+	let url = "https://covidtracking.com/api/v1/us/current.json";
 	
 	return url;
 }
 
-//Replace current cache of US data
-let updateUsaDatabase = async () => {
-	let url = getUsaDataUrl;
-	console.log(`Fetching ${url}`);
-}
+// UPDATE FUNCTIONS //
 
 //Cache database with new API result from world API
 let updateWorldDatabase = async () => {
@@ -90,6 +86,12 @@ let updateWorldDatabase = async () => {
 	} catch (err) {
 		console.log( err );
 	}
+}
+
+//Replace current cache of US data
+let updateUsaDatabase = async () => {
+	let url = getUsaDataUrl;
+	console.log(`Fetching ${url}`);
 }
 
 let mergeRecentEntry =  (result) => {
@@ -117,7 +119,8 @@ let mergeRecentEntry =  (result) => {
 }
 // Update database at interval of 10 minutes
 //updateWorldDatabase(); //Update on init
-updateWorldDatabase();
+//updateWorldDatabase();
+updateUsaDatabase();
 setInterval( async () => updateWorldDatabase(), 2400 * 1000);
 
 

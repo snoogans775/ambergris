@@ -19,13 +19,8 @@ body {
 	height: 1.5rem;
 }
 
-.header {
-	background: #FFFFFF;
-	display: grid;
-	grid-template-columns: [name] 35% [text] 40%;
-	margin-bottom: 0.2rem;
-	padding: 0.5rem;
-
+.header-text {
+	
 }
 
 .container {
@@ -35,9 +30,19 @@ body {
 	row-gap: 0.3em;
 	padding: 0.5rem;
 }
+
+.header {
+	background: #FFFFFF;
+	display: grid;
+	grid-template-columns: [name] 55% [text] 45%;
+	margin-bottom: 0.2rem;
+	padding: 0.5rem;
+
+}
+
 .entry {
 	display: grid;
-	grid-template-columns: [flag] 5% [name] 30% [text] 40%;
+	grid-template-columns: [flag] 5% [name] 50% [text] 45%;
 }
 
 .flag {
@@ -54,4 +59,11 @@ body {
 	background: #BB99A2;
 	height: 0.2em;
 	padding: 0.1em;
+	width: 100%;
+}
+
+.cases-barContainer {
+	background: #FFDDE2;
+	height: 0.2em;
+	width: 100%;
 }

@@ -1,55 +1,63 @@
 const displayData = async () => {
-	let dataset = await getWorldJSON();
-	let recentData = dataset;
-	console.log(recentData);
+	//Fetching data from API
+	let worldData = await getWorldJSON();
+	let recentUsaData   = await getUsaJSON();
+	console.log(worldData);
+	console.log('USA DATA');
+	console.log(recentUsaData);
 	
-	const maxCases = getMaxCases(recentData.Countries);
+	//Constants for use in calculation
+	const worldCases = worldData.Global.TotalConfirmed;
 	
 	//Create chart
 	let header = createHeader();
-	let container = newElement({
+	let container = webElement({
 		element: 'div', 
 		class: 'container'
 	});
 	
-	//Global numbers for computations
-	let worldCases = recentData.Global.TotalConfirmed;
-	
 	//Insert rows
-	for ( item of recentData.Countries ) {
-		let entry = newElement({
+	for ( item of worldData.Countries ) {
+		let entry = webElement({
 			element: 'div', 
 			class: 'entry'
 		});
-		let flag = newElement({
+		let flag = webElement({
 			element: 'img', 
 			class: 'flag', 
-			source: item.Country
+			source: 'flags/' + item.CountryCode + '.png'
 		});
-		let countryName = newElement({
+		let countryName = webElement({
 			element: 'div', 
 			class: 'country-name', 
 			text: item.Country
 		});
-		let cases = newElement({
+		let cases = webElement({
 			element: 'div',
 			class: 'text', 
 			text: item.TotalConfirmed
 		});
-		let bar = newElement({
-			element: 'span',
+		let barContainer = webElement({
+			element: 'div',
+			class: 'cases-barContainer',
+		})
+		let bar = webElement({
+			element: 'div',
 			class: 'cases-bar'
 		});
-		//FIXME: Refactor newElement styling (Kevin: 5/11/2020 11:52:00)
+		
+		//Convert total cases to a percentage of world cases
 		let localCases = item.TotalConfirmed;
-		let width = (localCases / worldCases) * 1000;
+		let width = ( localCases / worldCases ) * 100;
 		bar.style.width = `${width}%`;
-		bar.id = `${item.Country.toLowerCase()}-bar`;
 		
-		//text overlay
-		bar.append(localCases);
+		//Local cases bar is a child of total cases container
+		barContainer.appendChild(bar);
 		
-		entry.append(flag, countryName, bar);
+		//Fetch the image for the country flag
+		
+		
+		entry.append(flag, countryName, barContainer);
 		container.append(entry);
 	}
 	
@@ -101,24 +109,26 @@ const getWealthJSON = async () => {
 }
 
 // Element functions
-var newElement = (obj) => {
+var webElement = (obj) => {
 	let ele = document.createElement(obj.element);
 	ele.setAttribute('class', obj.class);
-	if(typeof(obj.source) !== "undefined") {ele.setAttribute('src', obj.source)};
+	if( typeof(obj.source) !== "undefined" ) { ele.setAttribute('src', obj.source) };
 	ele.textContent = obj.text;
 	ele.onclick = obj.onclick;
 	return ele;
 }
 
 var createHeader = () => {
-	let header = newElement({element:'div', class: 'header'});
+	let header = webElement({element:'div', class: 'header'});
 	header.append(
-		newElement({element: 'div', text: 'Country'}),
-		newElement({element: 'div', text: 'Cases'})	
+		webElement({element: 'div', class: 'header-text', text: 'Country'}),
+		webElement({element: 'div', class: 'header-text', text: 'Cases'})	
 	);
 	
 	return header;
 }
 
+//Display data and run tests
 displayData();
+//console.log(getWealthJSON);
 

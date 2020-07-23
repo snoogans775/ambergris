@@ -12,6 +12,7 @@ app.use(express.json({limit: '1mb'}));
 //Initialize world database
 const worldDatabase = new Datastore('collections/world.db');
 worldDatabase.loadDatabase();
+
 //Initialize US database
 const usDatabase = new Datastore('collections/us.db');
 usDatabase.loadDatabase();
@@ -25,7 +26,6 @@ app.get('/world', async (request, response) => {
 			return;
 		}
 		response.json(data);
-		console.log(data);
 	})
 })
 
@@ -67,8 +67,8 @@ let getUsaDataUrl = (option) => {
 }
 
 //Replace current cache of US data
-let updateUsDatabase = async () => {
-	let url = getUsDataUrl;
+let updateUsaDatabase = async () => {
+	let url = getUsaDataUrl;
 	console.log(`Fetching ${url}`);
 }
 
@@ -96,7 +96,7 @@ let mergeRecentEntry =  (result) => {
 	let apiDate = result.Date;
 	console.log(`Api Date: ${apiDate}`);
 	
-	worldDatabase.find({Date: apiDate}, (err, doc) => {
+	worldDatabase.find({}, (err, doc) => {
 		try {
 		let dbDate = doc[0].Date;
 		let msg = '';
@@ -117,9 +117,8 @@ let mergeRecentEntry =  (result) => {
 }
 // Update database at interval of 10 minutes
 //updateWorldDatabase(); //Update on init
-setInterval( async () => {
-	updateWorldDatabase();
-}, 240 * 1000);
+updateWorldDatabase();
+setInterval( async () => updateWorldDatabase(), 2400 * 1000);
 
 
 

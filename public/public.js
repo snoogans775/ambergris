@@ -1,13 +1,15 @@
 const displayData = async () => {
 	//Fetching data from API
 	let worldData = await getWorldJSON();
-	let recentUsaData   = await getUsaJSON();
+	let usaData   = await getUsaJSON();
 	console.log(worldData);
 	console.log('USA DATA');
-	console.log(recentUsaData);
+	console.log(usaData);
 	
 	//Constants for use in calculation
 	const worldCases = worldData.Global.TotalConfirmed;
+	const maxTotalCases = getMaxTotalCases(worldData);
+	const maxNewCases = getMaxNewCases(worldData);
 	
 	//Create chart
 	let header = createHeader();
@@ -32,32 +34,44 @@ const displayData = async () => {
 			class: 'country-name', 
 			text: item.Country
 		});
-		let cases = webElement({
+		let totalCasesContainer = webElement({
 			element: 'div',
-			class: 'text', 
-			text: item.TotalConfirmed
-		});
-		let barContainer = webElement({
-			element: 'div',
-			class: 'cases-barContainer',
+			class: 'totalCases-barContainer',
 		})
-		let bar = webElement({
+		let totalCasesBar = webElement({
 			element: 'div',
-			class: 'cases-bar'
+			class: 'totalCases-bar'
+		});
+		let newCasesContainer = webElement({
+			element: 'div',
+			class: 'newCases-barContainer',
+		})
+		let newCasesBar = webElement({
+			element: 'div',
+			class: 'newCases-bar'
 		});
 		
-		//Convert total cases to a percentage of world cases
-		let localCases = item.TotalConfirmed;
-		let width = ( localCases / worldCases ) * 100;
-		bar.style.width = `${width}%`;
+		//Convert total cases to a percentage of highest caseload country
+		let localTotalCases = item.TotalConfirmed;
+		let totalWidth = ( localTotalCases / maxTotalCases ) * 100;
+		totalCasesBar.style.width = `${totalWidth}%`;
 		
-		//Local cases bar is a child of total cases container
-		barContainer.appendChild(bar);
+		//Convert total cases to a percentage of highest caseload country
+		let localNewCases = item.NewConfirmed;
+		let newWidth = ( localNewCases / maxNewCases ) * 100;
+		newCasesBar.style.width = `${newWidth}%`;
 		
-		//Fetch the image for the country flag
+		//Construct the pretty bar graphs
+		totalCasesContainer.appendChild(totalCasesBar);
+		newCasesContainer.appendChild(newCasesBar);
 		
-		
-		entry.append(flag, countryName, barContainer);
+		//Put everything together
+		entry.append(
+			flag, 
+			countryName, 
+			totalCasesContainer,
+			newCasesContainer
+		);
 		container.append(entry);
 	}
 	
@@ -81,12 +95,30 @@ let toPercent = (value, total) => {
 	return result;
 }
 
-let getMaxCases = (data) => {
-	let result = data.map( item => item.TotalConfirmed );
-	let maxValue = result.reduce( (a,b) => {
-		return Math.max(a,b);
-	})
-	console.log( maxValue );
+let getMaxTotalCases = (data) => {
+	let max = 0;
+	try {
+		for( item of data.Countries ) {
+			if (item.TotalConfirmed > max) { max = item.TotalConfirmed };
+		}
+	} catch (error) {
+		console.error(error);
+	}
+	
+	return max;
+}
+
+let getMaxNewCases = (data) => {
+	let max = 0;
+	try {
+		for( item of data.Countries ) {
+			if (item.NewConfirmed > max) { max = item.NewConfirmed };
+		}
+	} catch (error) {
+		console.error(error);
+	}
+	
+	return max;
 }
 
 //Requests made to server
@@ -122,7 +154,8 @@ var createHeader = () => {
 	let header = webElement({element:'div', class: 'header'});
 	header.append(
 		webElement({element: 'div', class: 'header-text', text: 'Country'}),
-		webElement({element: 'div', class: 'header-text', text: 'Cases'})	
+		webElement({element: 'div', class: 'header-text', text: 'Total Cases'}),
+		webElement({element: 'div', class: 'header-text', text: 'New Cases'})	
 	);
 	
 	return header;
@@ -130,5 +163,4 @@ var createHeader = () => {
 
 //Display data and run tests
 displayData();
-//console.log(getWealthJSON);
 

@@ -5,8 +5,9 @@ body, html {
 
 body {
 	display: grid;
-  background: #DDFFFF;
+  background: #000000;
   font-family: 'Arial';
+	color: #CCCCCC;
 }
 
 #root {
@@ -32,9 +33,10 @@ body {
 }
 
 .header {
-	background: #FFFFFF;
+	background: #DDDDDD;
+	color: #000000;
 	display: grid;
-	grid-template-columns: [name] 55% [text] 45%;
+	grid-template-columns: [name] 50% [field1] 25% [field2] 15%;
 	margin-bottom: 0.2rem;
 	padding: 0.5rem;
 
@@ -42,7 +44,7 @@ body {
 
 .entry {
 	display: grid;
-	grid-template-columns: [flag] 5% [name] 50% [text] 45%;
+	grid-template-columns: [flag] 5% [name] 45% [field1] 25% [field2] 15%;
 }
 
 .flag {
@@ -55,15 +57,30 @@ body {
 .chart {
 
 }
-.cases-bar {
-	background: #BB99A2;
+.totalCases-bar {
+	background: #FF3932;
 	height: 0.2em;
 	padding: 0.1em;
 	width: 100%;
 }
 
-.cases-barContainer {
+.newCases-bar {
+	background: #3239FF;
+	height: 0.2em;
+	padding: 0.1em;
+	width: 100%;
+}
+
+.totalCases-barContainer {
 	background: #FFDDE2;
 	height: 0.2em;
-	width: 100%;
+	right-padding: 4%;
+	width: 96%;
+}
+
+.newCases-barContainer {
+	background: #E2DDFF;
+	height: 0.2em;
+	right-padding: 4%;
+	width: 96%;
 }

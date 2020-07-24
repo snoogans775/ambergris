@@ -5,7 +5,7 @@ body, html {
 
 body {
 	display: grid;
-  background: #000000;
+  background: #222222;
   font-family: 'Arial';
 	color: #CCCCCC;
 }
@@ -35,8 +35,9 @@ body {
 .header {
 	background: #DDDDDD;
 	color: #000000;
+	font-size: 12px;
 	display: grid;
-	grid-template-columns: [name] 50% [field1] 25% [field2] 15%;
+	grid-template-columns: [name] 50% [field1] 15% [field2] 15%;
 	margin-bottom: 0.2rem;
 	padding: 0.5rem;
 
@@ -44,7 +45,7 @@ body {
 
 .entry {
 	display: grid;
-	grid-template-columns: [flag] 5% [name] 45% [field1] 25% [field2] 15%;
+	grid-template-columns: [flag] 5% [name] 45% [field1] 15% [field2] 15%;
 }
 
 .flag {

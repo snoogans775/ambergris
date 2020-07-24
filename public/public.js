@@ -1,15 +1,12 @@
 const displayData = async () => {
 	//Fetching data from API
 	let worldData = await getWorldJSON();
-	let usaData   = await getUsaJSON();
 	console.log(worldData);
-	console.log('USA DATA');
-	console.log(usaData);
 	
 	//Constants for use in calculation
-	const worldCases = worldData.Global.TotalConfirmed;
-	const maxTotalCases = getMaxTotalCases(worldData);
-	const maxNewCases = getMaxNewCases(worldData);
+	const WORLD_CASES = worldData.Global.TotalConfirmed;
+	const MAX_TOTAL_CASES = getMaxTotalCases(worldData);
+	const MAX_NEW_CASES = getMaxNewCases(worldData);
 	
 	//Create chart
 	let header = createHeader();
@@ -18,7 +15,7 @@ const displayData = async () => {
 		class: 'container'
 	});
 	
-	//Insert rows
+	// Create contents of current entry
 	for ( item of worldData.Countries ) {
 		let entry = webElement({
 			element: 'div', 
@@ -52,20 +49,18 @@ const displayData = async () => {
 		});
 		
 		//Convert total cases to a percentage of highest caseload country
-		let localTotalCases = item.TotalConfirmed;
-		let totalWidth = ( localTotalCases / maxTotalCases ) * 100;
+		let totalWidth = ( item.TotalConfirmed / MAX_TOTAL_CASES ) * 100;
 		totalCasesBar.style.width = `${totalWidth}%`;
 		
 		//Convert total cases to a percentage of highest caseload country
-		let localNewCases = item.NewConfirmed;
-		let newWidth = ( localNewCases / maxNewCases ) * 100;
+		let newWidth = ( item.NewConfirmed / MAX_NEW_CASES ) * 100;
 		newCasesBar.style.width = `${newWidth}%`;
 		
 		//Construct the pretty bar graphs
 		totalCasesContainer.appendChild(totalCasesBar);
 		newCasesContainer.appendChild(newCasesBar);
 		
-		//Put everything together
+		//Contsruct the entry
 		entry.append(
 			flag, 
 			countryName, 
@@ -75,6 +70,7 @@ const displayData = async () => {
 		container.append(entry);
 	}
 	
+	// Put everything together
 	let root = document.querySelector('#root');
 	root.append(header);
 	root.append(container);

@@ -4,11 +4,10 @@ const displayData = async () => {
 	console.log(worldData);
 	
 	//Constants for use in calculation
-	const WORLD_CASES = worldData.Global.TotalConfirmed;
-	const MAX_TOTAL_CASES = getMaxTotalCases(worldData);
+	const MAX_TOTAL_CASES = getMax(worldData.Countries, country => country.TotalConfirmed);
 	const MAX_NEW_CASES = getMaxNewCases(worldData);
 	
-	//Create chart
+	//Create table
 	let header = createHeader();
 	let container = webElement({
 		element: 'div', 
@@ -60,7 +59,7 @@ const displayData = async () => {
 		totalCasesContainer.appendChild(totalCasesBar);
 		newCasesContainer.appendChild(newCasesBar);
 		
-		//Contsruct the entry
+		//Construct the entry
 		entry.append(
 			flag, 
 			countryName, 
@@ -91,30 +90,20 @@ let toPercent = (value, total) => {
 	return result;
 }
 
-let getMaxTotalCases = (data) => {
+let getMax = (data, filter) => {
 	let max = 0;
+	let log = [];
+	log.push({'init': 'Starting max calc'});
+	log.push({'data': data});
 	try {
-		for( item of data.Countries ) {
-			if (item.TotalConfirmed > max) { max = item.TotalConfirmed };
+		for( item of data ) {
+			if (filter(item) > max) {max = filter(item)};
 		}
-	} catch (error) {
-		console.error(error);
+		return max;
+		
+	} catch (err) {
+		console.error(err);
 	}
-	
-	return max;
-}
-
-let getMaxNewCases = (data) => {
-	let max = 0;
-	try {
-		for( item of data.Countries ) {
-			if (item.NewConfirmed > max) { max = item.NewConfirmed };
-		}
-	} catch (error) {
-		console.error(error);
-	}
-	
-	return max;
 }
 
 //Requests made to server

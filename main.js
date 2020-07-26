@@ -3,6 +3,9 @@ const Datastore = require('nedb');
 const fetch = require('node-fetch');
 const fs = require('fs');
 
+//Routes
+const covidRouter = require('./routes/covidTracking')
+
 //Initialize express server
 const app = express();
 app.listen(3001, () => console.log('listening @ 3001'));

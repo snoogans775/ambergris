@@ -4,8 +4,8 @@ const displayData = async () => {
 	console.log(worldData);
 	
 	//Constants for use in calculation
-	const MAX_TOTAL_CASES = getMax(worldData.Countries, country => country.TotalConfirmed);
-	const MAX_NEW_CASES = getMaxNewCases(worldData);
+	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
+	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
 	
 	//Create table
 	let header = createHeader();
@@ -18,17 +18,18 @@ const displayData = async () => {
 	for ( item of worldData.Countries ) {
 		let entry = webElement({
 			element: 'div', 
-			class: 'entry'
+			class: 'entry',
+			id: `${item.CountryCode}-entry`
 		});
 		let flag = webElement({
 			element: 'img', 
 			class: 'flag', 
-			source: 'flags/' + item.CountryCode + '.png'
+			src: `flags/${item.CountryCode}.png`
 		});
 		let countryName = webElement({
 			element: 'div', 
 			class: 'country-name', 
-			text: item.Country
+			textContent: item.Country
 		});
 		let totalCasesContainer = webElement({
 			element: 'div',
@@ -76,14 +77,6 @@ const displayData = async () => {
 }
 
 //Computation functions
-let toNum = (str) => {
-	try {
-		let result = parseInt(str.replace(',', ''));
-		return result;
-	} catch (err) {
-		console.log(err);
-	}
-}
 
 let toPercent = (value, total) => {
 	let result = Math.floor( (value / total) * 100 );
@@ -106,7 +99,7 @@ let getMax = (data, filter) => {
 	}
 }
 
-//Requests made to server
+//Requests made to server//
 const getWorldJSON = async () => {
 	const response = await fetch('/world');
 	const data = await response.json();
@@ -125,22 +118,43 @@ const getWealthJSON = async () => {
 	return data;
 }
 
-// Element functions
-var webElement = (obj) => {
+//GUI functions//
+let entryClicked = (event) => {
+	console.log('clicked!');
+}
+
+//More generalized version of webElement
+let webElement = (obj) => {
+	//Create new element
+	let ele = document.createElement(obj.element);
+	//Define attributes for all correctly named object keys
+	//This relies on the string name in the object to be correct, dangerous
+	const keys = Object.keys(obj);
+	keys.forEach( (key, index) => {
+		ele.setAttribute(key, obj[key]);
+	});
+	
+	ele.textContent = obj.textContent;
+	return ele;
+}
+
+//Element function, deprecated
+let webElementDeprecated = (obj) => {
 	let ele = document.createElement(obj.element);
 	ele.setAttribute('class', obj.class);
+	ele.setAttribute('id', obj.id);
 	if( typeof(obj.source) !== "undefined" ) { ele.setAttribute('src', obj.source) };
 	ele.textContent = obj.text;
 	ele.onclick = obj.onclick;
 	return ele;
 }
 
-var createHeader = () => {
+let createHeader = () => {
 	let header = webElement({element:'div', class: 'header'});
 	header.append(
-		webElement({element: 'div', class: 'header-text', text: 'Country'}),
-		webElement({element: 'div', class: 'header-text', text: 'Total Cases'}),
-		webElement({element: 'div', class: 'header-text', text: 'New Cases'})	
+		webElement({element: 'div', class: 'header-text', textContent: 'Country'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'})	
 	);
 	
 	return header;

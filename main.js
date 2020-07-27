@@ -2,9 +2,10 @@ const express = require('express');
 const Datastore = require('nedb');
 const fetch = require('node-fetch');
 const fs = require('fs');
+const csvtojson = require('csvtojson');
 
 //Routes
-const covidRouter = require('./routes/covidTracking')
+const covidRouter = require('./routes/covidTracking');
 
 //Initialize express server
 const app = express();
@@ -45,12 +46,18 @@ app.get('/usa', async (request, response) => {
 
 //OECD Local File Method
 //Generic GET request
-app.get('/oecd', async (request, response) => {
-	let file = 'data/oecd-wealth.json';
+app.get('/gini', async (request, response) => {
+	let file = 'data/GINI.csv';
 	console.log(`${file} requested`);
-	fs.readFile(file, 'utf8', (err, data) => {
-		response.json(JSON.parse(data));
-	});
+	//Convert CSV to JSON
+	csvtojson()
+		.fromFile(file)
+		.then((json) => {
+			//Filter out all but most recent year
+			res = filterRecentYear(json);
+			filtered = res.map( line => line = line[0]);
+			response.json(filtered);
+		})
 })
 
 //External API methods
@@ -120,13 +127,45 @@ let mergeRecentEntry =  (result) => {
 	}
 	});
 }
+
+//Conversion Functions//
+//Function for conversion of GINI data to simplified format
+//Only distinct years that are the 
+let filterRecentYear = (data, year) => {
+	let result = [];
+	let log = []
+	try {
+		countryArray = [...new Set(data.map( x => x.LOCATION ))];
+		countryArray.forEach( (country) => {
+			let subset = data.filter( line => line.LOCATION == country);
+			let recentYearAsString = getMax(subset, c => parseInt(c.TIME));
+			result.push( subset.filter( y => y.TIME == recentYearAsString));
+			
+		});
+	} catch(err) {
+		console.error(err);
+	}
+	
+	return result;
+}
+
+let getMax = (data, filter) => {
+	let max = 0;
+	try {
+		for( item of data ) {
+			if (filter(item) > max) {max = filter(item)};
+		}
+		return max;
+		
+	} catch (err) {
+		console.error(err);
+	}
+}
 // Update database at interval of 10 minutes
 //updateWorldDatabase(); //Update on init
 //updateWorldDatabase();
 updateUsaDatabase();
 setInterval( async () => updateWorldDatabase(), 2400 * 1000);
-
-
 
 
 

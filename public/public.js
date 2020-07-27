@@ -2,6 +2,8 @@ const displayData = async () => {
 	//Fetching data from API
 	let worldData = await getWorldJSON();
 	console.log(worldData);
+	let gini = await getWealthJSON();
+	console.log(gini);
 	
 	//Constants for use in calculation
 	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
@@ -85,9 +87,6 @@ let toPercent = (value, total) => {
 
 let getMax = (data, filter) => {
 	let max = 0;
-	let log = [];
-	log.push({'init': 'Starting max calc'});
-	log.push({'data': data});
 	try {
 		for( item of data ) {
 			if (filter(item) > max) {max = filter(item)};
@@ -113,7 +112,7 @@ const getUsaJSON = async () => {
 }
 
 const getWealthJSON = async () => {
-	const response = await fetch('/oecd');
+	const response = await fetch('/gini');
 	const data = await response.json();
 	return data;
 }
@@ -127,13 +126,14 @@ let entryClicked = (event) => {
 let webElement = (obj) => {
 	//Create new element
 	let ele = document.createElement(obj.element);
-	//Define attributes for all correctly named object keys
+	//Assign attributes for all correctly named object keys
 	//This relies on the string name in the object to be correct, dangerous
 	const keys = Object.keys(obj);
 	keys.forEach( (key, index) => {
 		ele.setAttribute(key, obj[key]);
 	});
 	
+	//Assign content of element
 	ele.textContent = obj.textContent;
 	return ele;
 }

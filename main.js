@@ -44,7 +44,7 @@ app.get('/usa', async (request, response) => {
 	})
 })
 
-//OECD Local File Method
+//Local File Methods
 //Generic GET request
 app.get('/gini', async (request, response) => {
 	let file = 'data/GINI.csv';
@@ -55,9 +55,16 @@ app.get('/gini', async (request, response) => {
 		.then((json) => {
 			//Filter out all but most recent year
 			res = filterRecentYear(json);
-			filtered = res.map( line => line = line[0]);
-			response.json(filtered);
+			//Move all children up a level
+			inverted = res.map( line => line = line[0]);
+			response.json(inverted);
 		})
+})
+
+app.get('/countryCodeMatrix', async (request, response) => {
+	let file = 'data/countryCodeMatrix.csv';
+	let matrix = await csvtojson().fromFile(file);
+	response.json(matrix);
 })
 
 //External API methods

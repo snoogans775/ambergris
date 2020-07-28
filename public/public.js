@@ -1,9 +1,16 @@
+//Covid Data Tracker
+//Kevin Fredericks 2020
+//LICENSE: MIT
+//Data sourced from:
+// Covid Tracking Project 
+// OECD GINI scores
+// Transparency International
+
 const displayData = async () => {
 	//Fetching data from API
-	let worldData = await getWorldJSON();
-	console.log(worldData);
-	let gini = await getWealthJSON();
-	console.log(gini);
+	const worldData = await getWorldJSON();
+	const giniData = await getWealthJSON();
+	const countryCodeMatrix = await getConversionMatrixJSON();
 	
 	//Constants for use in calculation
 	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
@@ -49,37 +56,55 @@ const displayData = async () => {
 			element: 'div',
 			class: 'newCases-bar'
 		});
+		let wealthContainer = webElement({
+			element: 'div',
+			class: 'wealth-container'
+		})
+		let wealthIndicator = webElement({
+			element: 'div',
+			class: 'wealth-indicator'
+		})
 		
 		//Convert total cases to a percentage of highest caseload country
-		let totalWidth = ( item.TotalConfirmed / MAX_TOTAL_CASES ) * 100;
+		let totalWidth = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
 		totalCasesBar.style.width = `${totalWidth}%`;
 		
 		//Convert total cases to a percentage of highest caseload country
-		let newWidth = ( item.NewConfirmed / MAX_NEW_CASES ) * 100;
+		let newWidth = toPercent(item.NewConfirmed, MAX_NEW_CASES);
 		newCasesBar.style.width = `${newWidth}%`;
 		
+		//Place wealth disparity indicator according to GINI score
+		let giniScore = getGINI(item.CountryCode, giniData, countryCodeMatrix);
+		wealthIndicator.style.marginLeft = `${giniScore}%`;
+		``
 		//Construct the pretty bar graphs
 		totalCasesContainer.appendChild(totalCasesBar);
 		newCasesContainer.appendChild(newCasesBar);
+		wealthContainer.appendChild(wealthIndicator);
 		
 		//Construct the entry
 		entry.append(
 			flag, 
 			countryName, 
 			totalCasesContainer,
-			newCasesContainer
+			newCasesContainer,
+			wealthContainer
 		);
 		container.append(entry);
 	}
 	
-	// Put everything together
+	//Put everything together
 	let root = document.querySelector('#root');
 	root.append(header);
 	root.append(container);
 }
 
-//Computation functions
+let assignEventListeners = () => {
+	let entry = document.querySelector('#AF-entry');
+	entry.addEventListener('click', entryClicked);
+}
 
+//Computation functions
 let toPercent = (value, total) => {
 	let result = Math.floor( (value / total) * 100 );
 	return result;
@@ -98,6 +123,22 @@ let getMax = (data, filter) => {
 	}
 }
 
+let naturalLog = (value, multiplier = 1) => {
+	return ( Math.log(value) * multiplier ) + 0.5;
+}
+
+let getGINI = (countryCode, data, matrix) => {
+	try {
+		//Check for shortened country codes
+		let code = matrix.filter( line => line.AlphaTwo == countryCode)[0].AlphaThree;
+		let giniLine = data.filter( line => line.LOCATION == code )[0];
+		let result = giniLine.Value * 100; //Convert to percentage
+		return result;
+	} catch (err) {
+		return 0;
+	}
+}
+
 //Requests made to server//
 const getWorldJSON = async () => {
 	const response = await fetch('/world');
@@ -113,6 +154,12 @@ const getUsaJSON = async () => {
 
 const getWealthJSON = async () => {
 	const response = await fetch('/gini');
+	const data = await response.json();
+	return data;
+}
+
+const getConversionMatrixJSON = async () => {
+	const response = await fetch('/countryCodeMatrix');
 	const data = await response.json();
 	return data;
 }
@@ -138,23 +185,13 @@ let webElement = (obj) => {
 	return ele;
 }
 
-//Element function, deprecated
-let webElementDeprecated = (obj) => {
-	let ele = document.createElement(obj.element);
-	ele.setAttribute('class', obj.class);
-	ele.setAttribute('id', obj.id);
-	if( typeof(obj.source) !== "undefined" ) { ele.setAttribute('src', obj.source) };
-	ele.textContent = obj.text;
-	ele.onclick = obj.onclick;
-	return ele;
-}
-
 let createHeader = () => {
 	let header = webElement({element:'div', class: 'header'});
 	header.append(
 		webElement({element: 'div', class: 'header-text', textContent: 'Country'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'})	
+		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Inequality Index'})
 	);
 	
 	return header;
@@ -162,4 +199,5 @@ let createHeader = () => {
 
 //Display data and run tests
 displayData();
+assignEventListeners();
 

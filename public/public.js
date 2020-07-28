@@ -6,7 +6,7 @@
 // OECD GINI scores
 // Transparency International
 
-const displayData = async () => {
+const display = async () => {
 	//Fetching data from API
 	const worldData = await getWorldJSON();
 	const giniData = await getWealthJSON();
@@ -16,6 +16,13 @@ const displayData = async () => {
 	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
 	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
 	
+	//Render title
+	let title = webElement({
+		element: 'h1',
+		textContent: 'Covid-19 Data Tracker'
+	})
+	//Render value multiplier
+	let logMultiplier = createLogMultiplier();
 	//Create table
 	let header = createHeader();
 	let container = webElement({
@@ -24,7 +31,7 @@ const displayData = async () => {
 	});
 	
 	// Create contents of current entry
-	for ( item of worldData.Countries ) {
+	for ( let item of worldData.Countries ) {
 		let entry = webElement({
 			element: 'div', 
 			class: 'entry',
@@ -62,7 +69,16 @@ const displayData = async () => {
 		})
 		let wealthIndicator = webElement({
 			element: 'div',
-			class: 'wealth-indicator'
+			class: 'generic-indicator'
+		})
+		let fatalityContainer = webElement({
+			element: 'div',
+			class: 'fatality-container'
+		})
+		let fatalityIndicator = webElement({
+			element: 'div',
+			class: 'generic-indicator',
+			id: `${item.CountryCode}-fatality-indicator`
 		})
 		
 		//Convert total cases to a percentage of highest caseload country
@@ -76,10 +92,17 @@ const displayData = async () => {
 		//Place wealth disparity indicator according to GINI score
 		let giniScore = getGINI(item.CountryCode, giniData, countryCodeMatrix);
 		wealthIndicator.style.marginLeft = `${giniScore}%`;
-		``
+		
+		//Place fatality indicator
+		let fatality = getFatality(item);
+		fatalityIndicator.fatality = `${fatality}`;
+		fatalityIndicator.style.marginLeft = `${fatality}%`;
+
+
 		//Construct the pretty bar graphs
 		totalCasesContainer.appendChild(totalCasesBar);
 		newCasesContainer.appendChild(newCasesBar);
+		fatalityContainer.appendChild(fatalityIndicator);
 		wealthContainer.appendChild(wealthIndicator);
 		
 		//Construct the entry
@@ -88,6 +111,7 @@ const displayData = async () => {
 			countryName, 
 			totalCasesContainer,
 			newCasesContainer,
+			fatalityContainer,
 			wealthContainer
 		);
 		container.append(entry);
@@ -95,16 +119,70 @@ const displayData = async () => {
 	
 	//Put everything together
 	let root = document.querySelector('#root');
+	root.append(title);
+	root.append(logMultiplier);
 	root.append(header);
 	root.append(container);
+	
+	//Assign event listeners
+	//This could be done asynchronously
+	//but it is simpler to do it now, knowing that all divs are in the DOM
+	assignEventListeners();
+}
+
+//GUI functions//
+let slideMultiplier = (event) => {
+	//Define slider in DOM
+	let container = event.target;
+	let slider = document.querySelector('#log-multiplier-indicator');
+	let offset = event.clientX - container.offsetLeft;
+	
+	//Update slider position
+	slider.style.paddingLeft = offset + 'px';
+	//Update fatality indicator
+	let slidermove = createSliderEvent(offset);
+	let indicator = document.querySelector('#AF-fatality-indicator');
+	indicator.dispatchEvent(slidermove);
+	
+}
+
+let updateFatality = (event) => {
+	const dampener = 8; //Higher values dampen the effect of the slider on the indicator
+	let indicator = event.target;
+	let multiplier = getNaturalLog(event.detail.value, 8);
+	let adjustedValue = getNaturalLog(indicator.fatality, multiplier);
+	
+	//Update indicator
+	console.log(`Slider is moving to...${event.detail.value}`);
+	console.log(`Adjusted value is...${adjustedValue}`);
+	indicator.style.marginLeft = `${adjustedValue}%`;
+	console.log( event.target);
 }
 
 let assignEventListeners = () => {
-	let entry = document.querySelector('#AF-entry');
-	entry.addEventListener('click', entryClicked);
+	//Multiplier for slider
+	let multiplier = document.querySelector('#log-multiplier-container');
+	multiplier.addEventListener('mousemove', slideMultiplier);
+	let indicator = document.querySelector('#AF-fatality-indicator');
+	indicator.addEventListener('slidermove', updateFatality);
 }
 
-//Computation functions
+let createSliderEvent = (value = 1) => {
+	let slidermove = new CustomEvent(
+		'slidermove',
+		{
+			detail: {
+				value: value
+			},
+			bubbles: true,
+			cancelable: true
+		}
+	);
+	
+	return slidermove;
+}
+
+//Computation functions//
 let toPercent = (value, total) => {
 	let result = Math.floor( (value / total) * 100 );
 	return result;
@@ -113,7 +191,7 @@ let toPercent = (value, total) => {
 let getMax = (data, filter) => {
 	let max = 0;
 	try {
-		for( item of data ) {
+		for( let item of data ) {
 			if (filter(item) > max) {max = filter(item)};
 		}
 		return max;
@@ -123,8 +201,20 @@ let getMax = (data, filter) => {
 	}
 }
 
-let naturalLog = (value, multiplier = 1) => {
+let getNaturalLog = (value, multiplier = 1) => {
 	return ( Math.log(value) * multiplier ) + 0.5;
+}
+
+let getFatality = (countryObject) => {
+	//Return a decimal value of country fatality rate
+	try {
+		let fatality = toPercent(countryObject.TotalDeaths, countryObject.TotalConfirmed);
+		let result = Math.round(fatality);
+		return result;
+		
+	} catch (err) {
+		console.error(err);
+	}
 }
 
 let getGINI = (countryCode, data, matrix) => {
@@ -164,11 +254,6 @@ const getConversionMatrixJSON = async () => {
 	return data;
 }
 
-//GUI functions//
-let entryClicked = (event) => {
-	console.log('clicked!');
-}
-
 //More generalized version of webElement
 let webElement = (obj) => {
 	//Create new element
@@ -185,12 +270,34 @@ let webElement = (obj) => {
 	return ele;
 }
 
+let createLogMultiplier = () => {
+	let logMultiplierContainer = webElement({
+		element: 'div',
+		class: 'log-multiplier-container',
+		id: 'log-multiplier-container' 
+	})
+	let logMultiplierIndicator = webElement({
+		element: 'div',
+		class: 'generic-indicator',
+		id: 'log-multiplier-indicator'
+	})
+	
+	logMultiplierContainer.appendChild(logMultiplierIndicator);
+	
+	return logMultiplierContainer;
+}
+
+let setLogMultiple = (value) => {
+	logMultiple = value;
+}
+
 let createHeader = () => {
 	let header = webElement({element:'div', class: 'header'});
 	header.append(
 		webElement({element: 'div', class: 'header-text', textContent: 'Country'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'Inequality Index'})
 	);
 	
@@ -198,6 +305,5 @@ let createHeader = () => {
 }
 
 //Display data and run tests
-displayData();
-assignEventListeners();
+display();
 

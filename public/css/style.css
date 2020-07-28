@@ -37,7 +37,7 @@ body {
 	color: #000000;
 	font-size: 12px;
 	display: grid;
-	grid-template-columns: [name] 50% [field1] 15% [field2] 15% [field3] 15%;
+	grid-template-columns: [name] 45% [field1] 15% [field2] 15% [field3] 15% [field4] 10%;
 	margin-bottom: 0.2rem;
 	padding: 0.5rem;
 
@@ -45,7 +45,7 @@ body {
 
 .entry {
 	display: grid;
-	grid-template-columns: [flag] 5% [name] 45% [field1] 15% [field2] 15% [field3] 15%;
+	grid-template-columns: [flag] 5% [name] 40% [field1] 15% [field2] 15% [field3] 15% [field4] 10%;
 }
 
 .flag {
@@ -72,9 +72,9 @@ body {
 	width: 96%;
 }
 
-.wealth-indicator {
+.generic-indicator {
 	background: #DDDDDD;
-	height: 0.2em;
+	height: 100%;
 	width: 5%;
 	
 }
@@ -98,4 +98,18 @@ body {
 	height: 0.2em;
 	right-padding: 4%;
 	width: 96%;
+}
+
+.log-multiplier-container {
+	background-image: linear-gradient(to right, teal, green);
+	height: 1em;
+	right-padding: 4%;
+	width: 100%;
+}
+
+.fatality-container {
+	background-image: linear-gradient(to right, teal, maroon);
+	height: 0.2em;
+	right-padding: 4%;
+	width: 50%;
 }

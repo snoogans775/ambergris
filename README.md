@@ -6,14 +6,10 @@ This Covid-19 dashboard is intended to visualize data concerning the
 2020 Covid-19 epidemic. The Covid-19 Tracking Project API is cached at regular
 intervals for international data.
 
-# Dependencies
+## Dependencies
 - Node.js (v10+)
 - NeDB or MongoDB
 - ECMAScript 6+
-## Dependencies 
-- Node.js (v10+) 
-- NedB or MongoDB 
-- ECMAScript 6+ 
 ## Installation
 - Running the server  -
 Run `node main.js` from the root directory.

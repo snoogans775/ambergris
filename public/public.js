@@ -6,6 +6,10 @@
 // OECD GINI scores
 // Transparency International
 
+//Constants for Event Handlers
+const DAMPENER = 5;
+
+
 const display = async () => {
 	//Fetching data from API
 	const worldData = await getWorldJSON();
@@ -31,7 +35,7 @@ const display = async () => {
 	});
 	
 	// Create contents of current entry
-	for ( let item of worldData.Countries ) {
+	for (let item of worldData.Countries ) {
 		let entry = webElement({
 			element: 'div', 
 			class: 'entry',
@@ -53,7 +57,8 @@ const display = async () => {
 		})
 		let totalCasesBar = webElement({
 			element: 'div',
-			class: 'totalCases-bar'
+			class: 'totalCases-bar',
+			id: `${item.CountryCode}-total-cases-bar`
 		});
 		let newCasesContainer = webElement({
 			element: 'div',
@@ -61,7 +66,8 @@ const display = async () => {
 		})
 		let newCasesBar = webElement({
 			element: 'div',
-			class: 'newCases-bar'
+			class: 'newCases-bar',
+			id: `${item.CountryCode}-new-cases-bar`
 		});
 		let wealthContainer = webElement({
 			element: 'div',
@@ -77,17 +83,19 @@ const display = async () => {
 		})
 		let fatalityIndicator = webElement({
 			element: 'div',
-			class: 'generic-indicator',
+			class: 'fatality-indicator',
 			id: `${item.CountryCode}-fatality-indicator`
 		})
 		
 		//Convert total cases to a percentage of highest caseload country
-		let totalWidth = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
-		totalCasesBar.style.width = `${totalWidth}%`;
+		let totalCases = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
+		totalCasesBar.value = totalCases;
+		totalCasesBar.style.width = `${totalCases}%`;
 		
 		//Convert total cases to a percentage of highest caseload country
-		let newWidth = toPercent(item.NewConfirmed, MAX_NEW_CASES);
-		newCasesBar.style.width = `${newWidth}%`;
+		let newCases = toPercent(item.NewConfirmed, MAX_NEW_CASES);
+		newCasesBar.value = newCases;
+		newCasesBar.style.width = `${newCases}%`;
 		
 		//Place wealth disparity indicator according to GINI score
 		let giniScore = getGINI(item.CountryCode, giniData, countryCodeMatrix);
@@ -95,9 +103,8 @@ const display = async () => {
 		
 		//Place fatality indicator
 		let fatality = getFatality(item);
-		fatalityIndicator.fatality = `${fatality}`;
+		fatalityIndicator.value = fatality;
 		fatalityIndicator.style.marginLeft = `${fatality}%`;
-
 
 		//Construct the pretty bar graphs
 		totalCasesContainer.appendChild(totalCasesBar);
@@ -131,40 +138,70 @@ const display = async () => {
 }
 
 //GUI functions//
+let assignEventListeners = () => {
+	//Multiplier for slider
+	let multiplierIndicator = document.querySelector('#log-multiplier-container');
+	multiplierIndicator.addEventListener('mousedown', slideMultiplier);
+	//Eventlisteners for all indicators
+	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
+	for(let indicator of fatalityIndicators) {
+		indicator.addEventListener('slidermove', updateFatality);
+	}
+	let allBars = document.querySelectorAll('.totalCases-bar', '.newCases-bar');
+	for(let bar of allBars) {
+		bar.addEventListener('slidermove', updateBar);
+	}
+	
+}
+
 let slideMultiplier = (event) => {
 	//Define slider in DOM
-	let container = event.target;
+	let container = document.querySelector('#log-multiplier-container');
 	let slider = document.querySelector('#log-multiplier-indicator');
-	let offset = event.clientX - container.offsetLeft;
+	let offset = event.offsetX;
 	
 	//Update slider position
-	slider.style.paddingLeft = offset + 'px';
-	//Update fatality indicator
-	let slidermove = createSliderEvent(offset);
-	let indicator = document.querySelector('#AF-fatality-indicator');
-	indicator.dispatchEvent(slidermove);
+	let sliderWidth = slider.clientWidth;
+	let upperBound = container.clientWidth - sliderWidth;
+	let rightMargin = slider;
+	console.log(`UpperBound: ${upperBound}\nWidth: ${sliderWidth}\nOffset: ${offset}`);
+	slider.style.marginLeft = (offset <= upperBound) ? `${offset}px` : `${upperBound}px`;
 	
+	let slidermove = createSliderEvent(offset);
+	updateIndicatorsAll(slidermove);
+
+}
+
+let updateIndicatorsAll = (event) => {
+	//Update fatality indicators
+	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
+	for(let indicator of fatalityIndicators){
+		indicator.dispatchEvent(event);
+	}
+	let totalCasesBars = document.querySelectorAll('.totalCases-bar');
+	for(let bar of totalCasesBars){
+		bar.dispatchEvent(event);
+	}
 }
 
 let updateFatality = (event) => {
-	const dampener = 8; //Higher values dampen the effect of the slider on the indicator
+	const dampener = DAMPENER; //Higher values dampen the effect
 	let indicator = event.target;
-	let multiplier = getNaturalLog(event.detail.value, 8);
-	let adjustedValue = getNaturalLog(indicator.fatality, multiplier);
+	let multiplier = getNaturalLog(event.detail.value, dampener);
+	let adjustedValue = getNaturalLog(indicator.value, multiplier);
 	
 	//Update indicator
-	console.log(`Slider is moving to...${event.detail.value}`);
-	console.log(`Adjusted value is...${adjustedValue}`);
 	indicator.style.marginLeft = `${adjustedValue}%`;
-	console.log( event.target);
 }
 
-let assignEventListeners = () => {
-	//Multiplier for slider
-	let multiplier = document.querySelector('#log-multiplier-container');
-	multiplier.addEventListener('mousemove', slideMultiplier);
-	let indicator = document.querySelector('#AF-fatality-indicator');
-	indicator.addEventListener('slidermove', updateFatality);
+let updateBar = (event) => {
+	const dampener = DAMPENER; //Higher values dampen the effect
+	let bar = event.target;
+	let multiplier = getNaturalLog(event.detail.value, dampener);
+	let adjustedValue = getNaturalLog(bar.value, multiplier);
+	
+	//Update indicator
+	bar.style.width = `${adjustedValue}%`;
 }
 
 let createSliderEvent = (value = 1) => {
@@ -279,7 +316,7 @@ let createLogMultiplier = () => {
 	let logMultiplierIndicator = webElement({
 		element: 'div',
 		class: 'generic-indicator',
-		id: 'log-multiplier-indicator'
+		id: 'log-multiplier-indicator',
 	})
 	
 	logMultiplierContainer.appendChild(logMultiplierIndicator);

@@ -23,7 +23,6 @@ historical analysis and statistical analysis.
 
 ## Installation
 - Running the server  -
->>>>>>> 77a433176f7a7c8a4e50dfffca54d4623a63dadf
 Run `node main.js` from the root directory.
 `nodemon` is installed for dynamic updates.
 

@@ -10,16 +10,10 @@ intervals for international data.
 - Node.js (v10+)
 - NeDB or MongoDB
 - ECMAScript 6+
-
-## Installation
-- Running the server -
-2020 Covid-19 epidemic. Public APIs are queried and cached to provide
-historical analysis and statistical analysis.
 ## Dependencies 
 - Node.js (v10+) 
 - NedB or MongoDB 
 - ECMAScript 6+ 
-
 ## Installation
 - Running the server  -
 Run `node main.js` from the root directory.

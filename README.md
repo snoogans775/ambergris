@@ -13,7 +13,6 @@ intervals for international data.
 
 ## Installation
 - Running the server -
-=======
 2020 Covid-19 epidemic. Public APIs are queried and cached to provide
 historical analysis and statistical analysis.
 ## Dependencies 

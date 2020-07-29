@@ -23,8 +23,13 @@ const display = async () => {
 	//Render title
 	let title = webElement({
 		element: 'h1',
+		textContent: 'Ambergris Covid-19 Data Tracker'
+	})
+	let subtitle = webElement({
+		element: 'p',
 		textContent: 'Covid-19 Data Tracker'
 	})
+	title.appendChild(subtitle);
 	//Render value multiplier
 	let logMultiplier = createLogMultiplier();
 	//Create table
@@ -140,8 +145,12 @@ const display = async () => {
 //GUI functions//
 let assignEventListeners = () => {
 	//Multiplier for slider
-	let multiplierIndicator = document.querySelector('#log-multiplier-container');
-	multiplierIndicator.addEventListener('mousedown', slideMultiplier);
+	let multiplier = document.querySelector('#log-multiplier-container');
+	//create unique attribute for width of slider at init
+	let multiplierIndicator = document.querySelector('#log-multiplier-indicator');
+	multiplierIndicator.absoluteWidth = multiplierIndicator.clientWidth;
+	multiplier.addEventListener('mousemove', slideMultiplier);
+	
 	//Eventlisteners for all indicators
 	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
 	for(let indicator of fatalityIndicators) {
@@ -162,10 +171,11 @@ let slideMultiplier = (event) => {
 	
 	//Update slider position
 	let sliderWidth = slider.clientWidth;
-	let upperBound = container.clientWidth - sliderWidth;
+	let upperBound = container.clientWidth - slider.absoluteWidth;
 	let rightMargin = slider;
 	console.log(`UpperBound: ${upperBound}\nWidth: ${sliderWidth}\nOffset: ${offset}`);
-	slider.style.marginLeft = (offset <= upperBound) ? `${offset}px` : `${upperBound}px`;
+	console.log(slider);
+	slider.style.paddingLeft = (offset <= upperBound) ? `${offset}px` : `${upperBound}px`;
 	
 	let slidermove = createSliderEvent(offset);
 	updateIndicatorsAll(slidermove);

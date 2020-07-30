@@ -26,11 +26,11 @@ const display = async () => {
 	//Render title
 	let title = webElement({
 		element: 'h1',
-		textContent: 'Ambergris Covid-19 Data Tracker'
+		textContent: 'Ambergris'
 	})
 	let subtitle = webElement({
-		element: 'p',
-		textContent: 'Covid-19 Data Tracker'
+		element: 'h2',
+		textContent: 'Covid-19 Data Tracker' + DIRECTORY
 	})
 	title.appendChild(subtitle);
 	//Render value multiplier
@@ -52,7 +52,7 @@ const display = async () => {
 		let flag = webElement({
 			element: 'img', 
 			class: 'flag', 
-			src: `public/flags/${item.CountryCode}.png`
+			src: `${DIRECTORY}/flags/${item.CountryCode}.png`
 		});
 		let countryName = webElement({
 			element: 'div', 
@@ -176,8 +176,6 @@ let slideMultiplier = (event) => {
 	let sliderWidth = slider.clientWidth;
 	let upperBound = container.clientWidth - slider.absoluteWidth;
 	let rightMargin = slider;
-	console.log(`UpperBound: ${upperBound}\nWidth: ${sliderWidth}\nOffset: ${offset}`);
-	console.log(slider);
 	slider.style.paddingLeft = (offset <= upperBound) ? `${offset}px` : `${upperBound}px`;
 	
 	let slidermove = createSliderEvent(offset);

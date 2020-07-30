@@ -50,7 +50,7 @@ app.get('/usa', async (request, response) => {
 })
 
 //Local File Methods
-//Generic GET request
+//Get inequality data
 app.get('/gini', async (request, response) => {
 	let file = 'data/GINI.csv';
 	console.log(`${file} requested`);
@@ -66,13 +66,32 @@ app.get('/gini', async (request, response) => {
 		})
 })
 
+//Country code conversion matrix
 app.get('/countryCodeMatrix', async (request, response) => {
 	let file = 'data/countryCodeMatrix.csv';
 	let matrix = await csvtojson().fromFile(file);
 	response.json(matrix);
 })
 
+//Images for flags
+app.get('/flags', async (request, response) => {
+	let file = 'data/countryData.json';
+	fs.readFile(file, (err, data) => {
+		if (err) throw err;
+		//Parse the data and extract a new object
+		let countries = JSON.parse(data);
+		let flagSources = countries.map(c => {
+			let container = {};
+			container[c.name] = c.flag;
+			return container;
+		})
+		console.log(flagSources);
+	});
+	console.log('Success!')
+})
+
 //External API methods
+
 let getWorldDataUrl = (option = 0) => {
 	//Get the last update from most recent db entry
 	let url = "https://api.covid19api.com/";
@@ -112,7 +131,7 @@ let updateWorldDatabase = async () => {
 
 //Replace current cache of US data
 let updateUsaDatabase = async () => {
-	let url = getUsaDataUrl;
+	let url = getUsaDataUrl();
 	console.log(`Fetching ${url}`);
 }
 
@@ -127,7 +146,6 @@ let mergeRecentEntry =  (result) => {
 		if (apiDate == dbDate) {
 			msg = `Match found in db for world data entry: ${dbDate}`;
 		} else {
-			//FIXME: check for change in date format (Kevin: 05/11/20 11:38:00)
 			msg =`Updating world data with data from ${apiDate}`;
 			msg += `\n Most recent database entry: ${dbDate}`;
 			worldDatabase.insert(result);
@@ -176,7 +194,6 @@ let getMax = (data, filter) => {
 // Update database at interval of 10 minutes
 //updateWorldDatabase(); //Update on init
 //updateWorldDatabase();
-updateUsaDatabase();
 setInterval( async () => updateWorldDatabase(), 2400 * 1000);
 
 

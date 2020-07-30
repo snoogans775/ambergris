@@ -9,13 +9,10 @@
 //Constants for Event Handlers
 const DAMPENER = 5;
 
-//Directory constants
-const LOC = window.location.pathname;
-const DIRECTORY = LOC.substring(0, LOC.lastIndexOf('/'));
-
 const display = async () => {
 	//Fetching data from API
 	const worldData = await getWorldJSON();
+	const flagSources = await getFlagSources();
 	const giniData = await getWealthJSON();
 	const countryCodeMatrix = await getConversionMatrixJSON();
 	
@@ -44,9 +41,6 @@ const display = async () => {
 	
 	// Create contents of current entry
 	for (let item of worldData.Countries ) {
-		//Get flag data for country
-		flagSource = "https://restcountries.eu/data/afg.svg"
-		
 		let entry = webElement({
 			element: 'div', 
 			class: 'entry',
@@ -55,7 +49,7 @@ const display = async () => {
 		let flag = webElement({
 			element: 'img', 
 			class: 'flag', 
-			src: `app/public/flags/${item.CountryCode}.png`
+			src: `flags/${item.CountryCode}.png`
 		});
 		let countryName = webElement({
 			element: 'div', 
@@ -281,7 +275,7 @@ let getGINI = (countryCode, data, matrix) => {
 }
 
 //Requests made to server//
-const getFlagSources = async () => {
+const getFlagSources = async (countryCode) => {
 	const response = await fetch('/flags');
 	const data = await response.json();
 	return data;

@@ -52,7 +52,7 @@ const display = async () => {
 		let flag = webElement({
 			element: 'img', 
 			class: 'flag', 
-			src: `${DIRECTORY}/flags/${item.CountryCode}.png`
+			src: `public/flags/${item.CountryCode}.png`
 		});
 		let countryName = webElement({
 			element: 'div', 

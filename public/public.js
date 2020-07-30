@@ -25,12 +25,12 @@ const display = async () => {
 	
 	//Render title
 	let title = webElement({
-		element: 'h1',
+		element: 'h2',
 		textContent: 'Ambergris'
 	})
 	let subtitle = webElement({
-		element: 'h2',
-		textContent: 'Covid-19 Data Tracker' + DIRECTORY
+		element: 'h1',
+		textContent: 'Covid-19 Data Tracker'
 	})
 	title.appendChild(subtitle);
 	//Render value multiplier
@@ -52,7 +52,7 @@ const display = async () => {
 		let flag = webElement({
 			element: 'img', 
 			class: 'flag', 
-			src: `${DIRECTORY}/flags/${item.CountryCode}.png`
+			src: `app/public/flags/${item.CountryCode}.png`
 		});
 		let countryName = webElement({
 			element: 'div', 

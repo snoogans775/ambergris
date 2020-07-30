@@ -9,6 +9,9 @@
 //Constants for Event Handlers
 const DAMPENER = 5;
 
+//Directory constants
+const LOC = window.location.pathname;
+const DIRECTORY = LOC.substring(0, LOC.lastIndexOf('/'));
 
 const display = async () => {
 	//Fetching data from API
@@ -49,7 +52,7 @@ const display = async () => {
 		let flag = webElement({
 			element: 'img', 
 			class: 'flag', 
-			src: `flags/${item.CountryCode}.png`
+			src: `${DIRECTORY}/flags/${item.CountryCode}.png`
 		});
 		let countryName = webElement({
 			element: 'div', 

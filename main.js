@@ -3,15 +3,17 @@ const Datastore = require('nedb');
 const fetch = require('node-fetch');
 const fs = require('fs');
 const csvtojson = require('csvtojson');
+const helmet = require('helmet');
 
 //Routes
 const covidRouter = require('./routes/covidTracking');
 
 //Initialize express server
 const app = express();
-app.listen(3001, () => console.log('listening @ 3001'));
+app.listen(3000, () => console.log('listening @ 3000'));
 app.use(express.static('public'));
 app.use(express.json({limit: '1mb'}));
+app.use( helmet() );
 
 //Initialize world database
 const worldDatabase = new Datastore('collections/world.db');

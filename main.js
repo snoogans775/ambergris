@@ -8,9 +8,12 @@ const helmet = require('helmet');
 //Routes
 const covidRouter = require('./routes/covidTracking');
 
+//Production port configuration
+const server_port = process.env.PORT || 3000;
+
 //Initialize express server
 const app = express();
-app.listen(3000, () => console.log('listening @ 3000'));
+app.listen(server_port, () => console.log('listening @ 3000'));
 app.use(express.static('public'));
 app.use(express.json({limit: '1mb'}));
 app.use( helmet() );

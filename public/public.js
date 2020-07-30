@@ -44,6 +44,9 @@ const display = async () => {
 	
 	// Create contents of current entry
 	for (let item of worldData.Countries ) {
+		//Get flag data for country
+		flagSource = "https://restcountries.eu/data/afg.svg"
+		
 		let entry = webElement({
 			element: 'div', 
 			class: 'entry',
@@ -278,6 +281,11 @@ let getGINI = (countryCode, data, matrix) => {
 }
 
 //Requests made to server//
+const getFlagSources = async () => {
+	const response = await fetch('/flags');
+	const data = await response.json();
+	return data;
+}
 const getWorldJSON = async () => {
 	const response = await fetch('/world');
 	const data = await response.json();
@@ -333,10 +341,6 @@ let createLogMultiplier = () => {
 	logMultiplierContainer.appendChild(logMultiplierIndicator);
 	
 	return logMultiplierContainer;
-}
-
-let setLogMultiple = (value) => {
-	logMultiple = value;
 }
 
 let createHeader = () => {

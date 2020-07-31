@@ -75,19 +75,10 @@ app.get('/countryCodeMatrix', async (request, response) => {
 
 //Images for flags
 app.get('/flags', async (request, response) => {
-	let file = 'data/countryData.json';
+	let file = 'data/flags.json';
 	fs.readFile(file, (err, data) => {
 		if (err) throw err;
-		//Parse the data and extract a new object
-		let countries = JSON.parse(data);
-		let flagSources = countries.map( (item, key) => {
-			let container = {};
-			container['name'] = item.name;
-			container['flagSource'] = item.flag;
-			return container
-		})
-		//Clean up structure
-		flagSources.map(item => item[0]);
+		let flagSources = JSON.parse(data);
 		response.json(flagSources);
 		
 	});
@@ -182,6 +173,30 @@ let filterRecentYear = (data, year) => {
 	return result;
 }
 
+//Conversion of country metadata to country codes and flag sources
+let extractFlags = () => {
+	let input = 'data/countryData.json';
+	let destination = 'data/flags.json';
+	fs.readFile(input, (err, data) => {
+		if (err) throw err;
+		//Parse the data and extract a new object
+		let countries = JSON.parse(data);
+		let flagSources = countries.map( (item, key) => {
+			let container = {};
+			container['countryCode'] = item['alpha2Code'];
+			container['flagSource'] = item.flag;
+			return container;
+		})
+		//Clean up structure
+		flagSources.map(item => item[0]);
+		let output = JSON.stringify(flagSources);
+		console.log(output);
+		
+		fs.writeFile(destination, output, () => console.log('flags.json updated'));
+		
+	});
+}
+
 let getMax = (data, filter) => {
 	let max = 0;
 	try {
@@ -196,7 +211,6 @@ let getMax = (data, filter) => {
 }
 // Update database at interval of 10 minutes
 //updateWorldDatabase(); //Update on init
-//updateWorldDatabase();
 setInterval( async () => updateWorldDatabase(), 2400 * 1000);
 
 

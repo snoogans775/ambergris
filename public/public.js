@@ -15,6 +15,14 @@ const display = async () => {
 	const flagSources = await getCountryData();
 	const giniData = await getWealth();
 	const countryCodeMatrix = await getConversionMatrixJSON();
+	const dataBundle = {
+		worldData: worldData, 
+		flagSources: flagSources, 
+		giniData: giniData, 
+		countryCodeMatrix: countryCodeMatrix
+	};
+
+	console.log(createTable(dataBundle));
 	
 	//Constants for use in calculation
 	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
@@ -32,6 +40,57 @@ const display = async () => {
 	title.appendChild(subtitle);
 	//Render value multiplier
 	let logMultiplier = createLogMultiplier();
+	let table = createTable(dataBundle);
+	
+	//Put everything together
+	let root = document.querySelector('#root');
+	root.append(title);
+	root.append(logMultiplier);
+	root.append(table);
+	
+	//Assign event listeners
+	//This could be done asynchronously
+	//but it is simpler to do it now, knowing that all divs are in the DOM
+	assignEventListeners();
+}
+
+//GUI functions//
+//Render GUI elements
+let createLogMultiplier = () => {
+	let logMultiplierContainer = webElement({
+		element: 'div',
+		class: 'log-multiplier-container',
+		id: 'log-multiplier-container' 
+	})
+	let logMultiplierIndicator = webElement({
+		element: 'div',
+		class: 'generic-indicator',
+		id: 'log-multiplier-indicator',
+	})
+	
+	logMultiplierContainer.appendChild(logMultiplierIndicator);
+	
+	return logMultiplierContainer;
+}
+
+let createHeader = () => {
+	let header = webElement({element:'div', class: 'header'});
+	header.append(
+		webElement({element: 'div', class: 'header-text', textContent: 'Country'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Inequality Index'})
+	);
+	
+	return header;
+}
+
+let createTable = (data) => {
+	const worldData = data['worldData'];
+	const flagSources = data['flagSources'];
+	const giniData = data['giniSources'];
+	const countryCodeMatrix = data['countryCodeMatrix'];
 	//Create table
 	let header = createHeader();
 	let container = webElement({
@@ -89,95 +148,51 @@ const display = async () => {
 			class: 'fatality-indicator',
 			id: `${item.CountryCode}-fatality-indicator`
 		})
-		
-		//Assign values to elements //
-		
-		//Get source image for flag
-		//Slight differences in naming convention of country code
-		let flag = flagSources.filter( c => c.countryCode == item.CountryCode);
-		if (flag) flagImg.src = flag[0].flagSource;
-		console.log(flag);
-		
-		//Convert total cases to a percentage of highest caseload country
-		let totalCases = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
-		totalCasesBar.value = totalCases;
-		totalCasesBar.style.width = `${totalCases}%`;
-		
-		//Convert total cases to a percentage of highest caseload country
-		let newCases = toPercent(item.NewConfirmed, MAX_NEW_CASES);
-		newCasesBar.value = newCases;
-		newCasesBar.style.width = `${newCases}%`;
-		
-		//Place wealth disparity indicator according to GINI score
-		let giniScore = getGINI(item.CountryCode, giniData, countryCodeMatrix);
-		wealthIndicator.style.marginLeft = `${giniScore}%`;
-		
-		//Place fatality indicator
-		let fatality = getFatality(item);
-		fatalityIndicator.value = fatality;
-		fatalityIndicator.style.marginLeft = `${fatality}%`;
+	
+	//Assign values to elements //
+	
+	//Get source image for flag
+	//Slight differences in naming convention of country code
+	let flag = flagSources.filter( c => c.countryCode == item.CountryCode);
+	if (flag) flagImg.src = flag[0].flagSource;
+	console.log(flag);
+	
+	//Convert total cases to a percentage of highest caseload country
+	let totalCases = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
+	totalCasesBar.value = totalCases;
+	totalCasesBar.style.width = `${totalCases}%`;
+	
+	//Convert total cases to a percentage of highest caseload country
+	let newCases = toPercent(item.NewConfirmed, MAX_NEW_CASES);
+	newCasesBar.value = newCases;
+	newCasesBar.style.width = `${newCases}%`;
+	
+	//Place wealth disparity indicator according to GINI score
+	let giniScore = getGINI(item.CountryCode, giniData, countryCodeMatrix);
+	wealthIndicator.style.marginLeft = `${giniScore}%`;
+	
+	//Place fatality indicator
+	let fatality = getFatality(item);
+	fatalityIndicator.value = fatality;
+	fatalityIndicator.style.marginLeft = `${fatality}%`;
 
-		//Construct the pretty bar graphs
-		totalCasesContainer.appendChild(totalCasesBar);
-		newCasesContainer.appendChild(newCasesBar);
-		fatalityContainer.appendChild(fatalityIndicator);
-		wealthContainer.appendChild(wealthIndicator);
-		
-		//Construct the entry
-		entry.append(
-			flagImg, 
-			countryName, 
-			totalCasesContainer,
-			newCasesContainer,
-			fatalityContainer,
-			wealthContainer
-		);
-		container.append(entry);
-	}
+	//Construct the pretty bar graphs
+	totalCasesContainer.appendChild(totalCasesBar);
+	newCasesContainer.appendChild(newCasesBar);
+	fatalityContainer.appendChild(fatalityIndicator);
+	wealthContainer.appendChild(wealthIndicator);
 	
-	//Put everything together
-	let root = document.querySelector('#root');
-	root.append(title);
-	root.append(logMultiplier);
-	root.append(header);
-	root.append(container);
-	
-	//Assign event listeners
-	//This could be done asynchronously
-	//but it is simpler to do it now, knowing that all divs are in the DOM
-	assignEventListeners();
-}
-
-//GUI functions//
-//Render GUI elements
-let createLogMultiplier = () => {
-	let logMultiplierContainer = webElement({
-		element: 'div',
-		class: 'log-multiplier-container',
-		id: 'log-multiplier-container' 
-	})
-	let logMultiplierIndicator = webElement({
-		element: 'div',
-		class: 'generic-indicator',
-		id: 'log-multiplier-indicator',
-	})
-	
-	logMultiplierContainer.appendChild(logMultiplierIndicator);
-	
-	return logMultiplierContainer;
-}
-
-let createHeader = () => {
-	let header = webElement({element:'div', class: 'header'});
-	header.append(
-		webElement({element: 'div', class: 'header-text', textContent: 'Country'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Inequality Index'})
+	//Construct the entry
+	entry.append(
+		flagImg, 
+		countryName, 
+		totalCasesContainer,
+		newCasesContainer,
+		fatalityContainer,
+		wealthContainer
 	);
-	
-	return header;
+	container.append(entry);
+	}
 }
 
 //Event Handlers and Listeners
@@ -362,4 +377,3 @@ let webElement = (obj) => {
 
 //Display data and run tests
 display();
-

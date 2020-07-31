@@ -12,7 +12,7 @@ const DAMPENER = 5;
 const display = async () => {
 	//Fetching data from API
 	const worldData = await getWorldCovid();
-	const countryMetadata = await getCountryData();
+	const flagSources = await getCountryData();
 	const giniData = await getWealth();
 	const countryCodeMatrix = await getConversionMatrixJSON();
 	
@@ -45,7 +45,7 @@ const display = async () => {
 			class: 'entry',
 			id: `${item.CountryCode}-entry`
 		});
-		let flag = webElement({
+		let flagImg = webElement({
 			element: 'img', 
 			class: 'flag', 
 		});
@@ -93,9 +93,10 @@ const display = async () => {
 		//Assign values to elements //
 		
 		//Get source image for flag
-		let metadata = countryMetadata.filter( c => c.name == item.Country);
-		if (metadata[0]) flag.src = metadata[0].flagSource;
-		
+		//Slight differences in naming convention of country code
+		let flag = flagSources.filter( c => c.countryCode == item.CountryCode);
+		if (flag) flagImg.src = flag[0].flagSource;
+		console.log(flag);
 		
 		//Convert total cases to a percentage of highest caseload country
 		let totalCases = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
@@ -124,7 +125,7 @@ const display = async () => {
 		
 		//Construct the entry
 		entry.append(
-			flag, 
+			flagImg, 
 			countryName, 
 			totalCasesContainer,
 			newCasesContainer,
@@ -148,6 +149,38 @@ const display = async () => {
 }
 
 //GUI functions//
+//Render GUI elements
+let createLogMultiplier = () => {
+	let logMultiplierContainer = webElement({
+		element: 'div',
+		class: 'log-multiplier-container',
+		id: 'log-multiplier-container' 
+	})
+	let logMultiplierIndicator = webElement({
+		element: 'div',
+		class: 'generic-indicator',
+		id: 'log-multiplier-indicator',
+	})
+	
+	logMultiplierContainer.appendChild(logMultiplierIndicator);
+	
+	return logMultiplierContainer;
+}
+
+let createHeader = () => {
+	let header = webElement({element:'div', class: 'header'});
+	header.append(
+		webElement({element: 'div', class: 'header-text', textContent: 'Country'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Inequality Index'})
+	);
+	
+	return header;
+}
+
+//Event Handlers and Listeners
 let assignEventListeners = () => {
 	//Multiplier for slider
 	let multiplier = document.querySelector('#log-multiplier-container');
@@ -286,6 +319,7 @@ const getCountryData = async (countryCode) => {
 	console.log(data);
 	return data;
 }
+
 const getWorldCovid = async () => {
 	const response = await fetch('/world');
 	const data = await response.json();
@@ -310,7 +344,7 @@ const getConversionMatrixJSON = async () => {
 	return data;
 }
 
-//More generalized version of webElement
+//Custom webElement Creator
 let webElement = (obj) => {
 	//Create new element
 	let ele = document.createElement(obj.element);
@@ -324,36 +358,6 @@ let webElement = (obj) => {
 	//Assign content of element
 	ele.textContent = obj.textContent;
 	return ele;
-}
-
-let createLogMultiplier = () => {
-	let logMultiplierContainer = webElement({
-		element: 'div',
-		class: 'log-multiplier-container',
-		id: 'log-multiplier-container' 
-	})
-	let logMultiplierIndicator = webElement({
-		element: 'div',
-		class: 'generic-indicator',
-		id: 'log-multiplier-indicator',
-	})
-	
-	logMultiplierContainer.appendChild(logMultiplierIndicator);
-	
-	return logMultiplierContainer;
-}
-
-let createHeader = () => {
-	let header = webElement({element:'div', class: 'header'});
-	header.append(
-		webElement({element: 'div', class: 'header-text', textContent: 'Country'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Inequality Index'})
-	);
-	
-	return header;
 }
 
 //Display data and run tests

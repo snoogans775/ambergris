@@ -80,14 +80,17 @@ app.get('/flags', async (request, response) => {
 		if (err) throw err;
 		//Parse the data and extract a new object
 		let countries = JSON.parse(data);
-		let flagSources = countries.map(c => {
+		let flagSources = countries.map( (item, key) => {
 			let container = {};
-			container[c.name] = c.flag;
-			return container;
+			container['name'] = item.name;
+			container['flagSource'] = item.flag;
+			return container
 		})
-		console.log(flagSources);
+		//Clean up structure
+		flagSources.map(item => item[0]);
+		response.json(flagSources);
+		
 	});
-	console.log('Success!')
 })
 
 //External API methods
@@ -131,7 +134,7 @@ let updateWorldDatabase = async () => {
 
 //Replace current cache of US data
 let updateUsaDatabase = async () => {
-	let url = getUsaDataUrl();
+	let url = getUsaDataUrl;
 	console.log(`Fetching ${url}`);
 }
 

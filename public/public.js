@@ -11,9 +11,9 @@ const DAMPENER = 5;
 
 const display = async () => {
 	//Fetching data from API
-	const worldData = await getWorldJSON();
-	const flagSources = await getFlagSources();
-	const giniData = await getWealthJSON();
+	const worldData = await getWorldCovid();
+	const countryMetadata = await getCountryData();
+	const giniData = await getWealth();
 	const countryCodeMatrix = await getConversionMatrixJSON();
 	
 	//Constants for use in calculation
@@ -38,7 +38,6 @@ const display = async () => {
 		element: 'div', 
 		class: 'container'
 	});
-	
 	// Create contents of current entry
 	for (let item of worldData.Countries ) {
 		let entry = webElement({
@@ -49,7 +48,6 @@ const display = async () => {
 		let flag = webElement({
 			element: 'img', 
 			class: 'flag', 
-			src: `flags/${item.CountryCode}.png`
 		});
 		let countryName = webElement({
 			element: 'div', 
@@ -91,6 +89,13 @@ const display = async () => {
 			class: 'fatality-indicator',
 			id: `${item.CountryCode}-fatality-indicator`
 		})
+		
+		//Assign values to elements //
+		
+		//Get source image for flag
+		let metadata = countryMetadata.filter( c => c.name == item.Country);
+		if (metadata[0]) flag.src = metadata[0].flagSource;
+		
 		
 		//Convert total cases to a percentage of highest caseload country
 		let totalCases = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
@@ -275,24 +280,25 @@ let getGINI = (countryCode, data, matrix) => {
 }
 
 //Requests made to server//
-const getFlagSources = async (countryCode) => {
+const getCountryData = async (countryCode) => {
 	const response = await fetch('/flags');
 	const data = await response.json();
+	console.log(data);
 	return data;
 }
-const getWorldJSON = async () => {
+const getWorldCovid = async () => {
 	const response = await fetch('/world');
 	const data = await response.json();
 	return data;
 }
 
-const getUsaJSON = async () => {
+const getUsaCovid = async () => {
 	const response = await fetch('/usa');
 	const data = await response.json();
 	return data;
 }
 
-const getWealthJSON = async () => {
+const getWealth = async () => {
 	const response = await fetch('/gini');
 	const data = await response.json();
 	return data;

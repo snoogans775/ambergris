@@ -21,12 +21,6 @@ const display = async () => {
 		giniData: giniData, 
 		countryCodeMatrix: countryCodeMatrix
 	};
-
-	console.log(createTable(dataBundle));
-	
-	//Constants for use in calculation
-	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
-	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
 	
 	//Render title
 	let title = webElement({
@@ -80,7 +74,7 @@ let createHeader = () => {
 		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Inequality Index'})
+		webElement({element: 'div', class: 'header-text', textContent: 'Inequality'})
 	);
 	
 	return header;
@@ -91,12 +85,19 @@ let createTable = (data) => {
 	const flagSources = data['flagSources'];
 	const giniData = data['giniSources'];
 	const countryCodeMatrix = data['countryCodeMatrix'];
+
+	//Constants for use in calculation
+	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
+	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
+
 	//Create table
 	let header = createHeader();
 	let container = webElement({
 		element: 'div', 
-		class: 'container'
+		class: 'entry-container'
 	});
+	container.append(header);
+
 	// Create contents of current entry
 	for (let item of worldData.Countries ) {
 		let entry = webElement({
@@ -149,13 +150,12 @@ let createTable = (data) => {
 			id: `${item.CountryCode}-fatality-indicator`
 		})
 	
-	//Assign values to elements //
+	//Style elements //
 	
 	//Get source image for flag
 	//Slight differences in naming convention of country code
 	let flag = flagSources.filter( c => c.countryCode == item.CountryCode);
 	if (flag) flagImg.src = flag[0].flagSource;
-	console.log(flag);
 	
 	//Convert total cases to a percentage of highest caseload country
 	let totalCases = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
@@ -193,27 +193,37 @@ let createTable = (data) => {
 	);
 	container.append(entry);
 	}
+
+	return container;
 }
 
 //Event Handlers and Listeners
 let assignEventListeners = () => {
-	//Multiplier for slider
-	let multiplier = document.querySelector('#log-multiplier-container');
-	//create unique attribute for width of slider at init
+	//Create unique attribute for width of slider at init
+	//One day this will no longer be needed, but that day is not today
 	let multiplierIndicator = document.querySelector('#log-multiplier-indicator');
 	multiplierIndicator.absoluteWidth = multiplierIndicator.clientWidth;
-	multiplier.addEventListener('mousemove', slideMultiplier);
+
+	//Custom event for hover functionality
+	let focusSlider = sliderFocusEvent();
+
+	let multiplier = document.querySelector('#log-multiplier-container');
+	multiplier.addEventListener('mousedown', slideMultiplier);
 	
 	//Eventlisteners for all indicators
 	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
 	for(let indicator of fatalityIndicators) {
 		indicator.addEventListener('slidermove', updateFatality);
 	}
+	//Eventlisteners for all bars
 	let allBars = document.querySelectorAll('.totalCases-bar', '.newCases-bar');
 	for(let bar of allBars) {
 		bar.addEventListener('slidermove', updateBar);
 	}
-	
+}
+
+let focusSlider = (event) => {
+	console.log('clicked');
 }
 
 let slideMultiplier = (event) => {
@@ -228,7 +238,7 @@ let slideMultiplier = (event) => {
 	let rightMargin = slider;
 	slider.style.paddingLeft = (offset <= upperBound) ? `${offset}px` : `${upperBound}px`;
 	
-	let slidermove = createSliderEvent(offset);
+	let slidermove = sliderMoveEvent(offset);
 	updateIndicatorsAll(slidermove);
 
 }
@@ -265,7 +275,8 @@ let updateBar = (event) => {
 	bar.style.width = `${adjustedValue}%`;
 }
 
-let createSliderEvent = (value = 1) => {
+//Custom event to update all indicators and bars
+let sliderMoveEvent = (value = 1) => {
 	let slidermove = new CustomEvent(
 		'slidermove',
 		{
@@ -280,9 +291,25 @@ let createSliderEvent = (value = 1) => {
 	return slidermove;
 }
 
+//Custom event to add click and drag to slider
+let sliderFocusEvent = () => {
+	let sliderclick = new CustomEvent(
+		'sliderclick',
+		{
+			detail: {
+				description: 'focus event for hover functionality'
+			},
+			bubbles: true,
+			cancelable: true
+		}
+	);
+	
+	return sliderclick;
+}
+
 //Computation functions//
 let toPercent = (value, total) => {
-	let result = Math.floor( (value / total) * 100 );
+	let result = Math.ceil( (value / total) * 100 );
 	return result;
 }
 
@@ -307,7 +334,7 @@ let getFatality = (countryObject) => {
 	//Return a decimal value of country fatality rate
 	try {
 		let fatality = toPercent(countryObject.TotalDeaths, countryObject.TotalConfirmed);
-		let result = Math.round(fatality);
+		let result = Math.ceil(fatality);
 		return result;
 		
 	} catch (err) {
@@ -331,7 +358,6 @@ let getGINI = (countryCode, data, matrix) => {
 const getCountryData = async (countryCode) => {
 	const response = await fetch('/flags');
 	const data = await response.json();
-	console.log(data);
 	return data;
 }
 

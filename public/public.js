@@ -15,10 +15,13 @@ const display = async () => {
 	const flagSources = await getCountryData();
 	const giniData = await getWealth();
 	const countryCodeMatrix = await getConversionMatrixJSON();
-	
-	//Constants for use in calculation
-	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
-	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
+
+	const dataBundle = {
+		worldData: worldData, 
+		flagSources: flagSources, 
+		giniData: giniData, 
+		countryCodeMatrix: countryCodeMatrix
+	};
 	
 	//Render title
 	let title = webElement({
@@ -32,12 +35,70 @@ const display = async () => {
 	title.appendChild(subtitle);
 	//Render value multiplier
 	let logMultiplier = createLogMultiplier();
+	let table = createTable(dataBundle);
+	
+	//Put everything together
+	let root = document.querySelector('#root');
+	root.append(title);
+	root.append(logMultiplier);
+	root.append(table);
+	
+	//Assign event listeners
+	//This could be done asynchronously
+	//but it is simpler to do it now, knowing that all divs are in the DOM
+	assignEventListeners();
+}
+
+//GUI functions//
+//Render GUI elements
+let createLogMultiplier = () => {
+	let logMultiplierContainer = webElement({
+		element: 'div',
+		class: 'log-multiplier-container',
+		id: 'log-multiplier-container' 
+	})
+	let logMultiplierIndicator = webElement({
+		element: 'div',
+		class: 'generic-indicator',
+		id: 'log-multiplier-indicator',
+	})
+	
+	logMultiplierContainer.appendChild(logMultiplierIndicator);
+	
+	return logMultiplierContainer;
+}
+
+let createHeader = () => {
+	let header = webElement({element:'div', class: 'header'});
+	header.append(
+		webElement({element: 'div', class: 'header-text', textContent: 'Country'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
+		webElement({element: 'div', class: 'header-text', textContent: 'Inequality'})
+	);
+	
+	return header;
+}
+
+let createTable = (data) => {
+	const worldData = data['worldData'];
+	const flagSources = data['flagSources'];
+	const giniData = data['giniSources'];
+	const countryCodeMatrix = data['countryCodeMatrix'];
+
+	//Constants for use in calculation
+	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
+	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
+
 	//Create table
 	let header = createHeader();
 	let container = webElement({
 		element: 'div', 
-		class: 'container'
+		class: 'entry-container'
 	});
+	container.append(header);
+
 	// Create contents of current entry
 	for (let item of worldData.Countries ) {
 		let entry = webElement({
@@ -89,116 +150,81 @@ const display = async () => {
 			class: 'fatality-indicator',
 			id: `${item.CountryCode}-fatality-indicator`
 		})
-		
-		//Assign values to elements //
-		
-		//Get source image for flag
-		//Slight differences in naming convention of country code
-		let flag = flagSources.filter( c => c.countryCode == item.CountryCode);
-		if (flag) flagImg.src = flag[0].flagSource;
-		console.log(flag);
-		
-		//Convert total cases to a percentage of highest caseload country
-		let totalCases = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
-		totalCasesBar.value = totalCases;
-		totalCasesBar.style.width = `${totalCases}%`;
-		
-		//Convert total cases to a percentage of highest caseload country
-		let newCases = toPercent(item.NewConfirmed, MAX_NEW_CASES);
-		newCasesBar.value = newCases;
-		newCasesBar.style.width = `${newCases}%`;
-		
-		//Place wealth disparity indicator according to GINI score
-		let giniScore = getGINI(item.CountryCode, giniData, countryCodeMatrix);
-		wealthIndicator.style.marginLeft = `${giniScore}%`;
-		
-		//Place fatality indicator
-		let fatality = getFatality(item);
-		fatalityIndicator.value = fatality;
-		fatalityIndicator.style.marginLeft = `${fatality}%`;
+	
+	//Style elements //
+	
+	//Get source image for flag
+	//Slight differences in naming convention of country code
+	let flag = flagSources.filter( c => c.countryCode == item.CountryCode);
+	if (flag) flagImg.src = flag[0].flagSource;
+	
+	//Convert total cases to a percentage of highest caseload country
+	let totalCases = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
+	totalCasesBar.value = totalCases;
+	totalCasesBar.style.width = `${totalCases}%`;
+	
+	//Convert total cases to a percentage of highest caseload country
+	let newCases = toPercent(item.NewConfirmed, MAX_NEW_CASES);
+	newCasesBar.value = newCases;
+	newCasesBar.style.width = `${newCases}%`;
+	
+	//Place wealth disparity indicator according to GINI score
+	let giniScore = getGINI(item.CountryCode, giniData, countryCodeMatrix);
+	wealthIndicator.style.marginLeft = `${giniScore}%`;
+	
+	//Place fatality indicator
+	let fatality = getFatality(item);
+	fatalityIndicator.value = fatality;
+	fatalityIndicator.style.marginLeft = `${fatality}%`;
 
-		//Construct the pretty bar graphs
-		totalCasesContainer.appendChild(totalCasesBar);
-		newCasesContainer.appendChild(newCasesBar);
-		fatalityContainer.appendChild(fatalityIndicator);
-		wealthContainer.appendChild(wealthIndicator);
-		
-		//Construct the entry
-		entry.append(
-			flagImg, 
-			countryName, 
-			totalCasesContainer,
-			newCasesContainer,
-			fatalityContainer,
-			wealthContainer
-		);
-		container.append(entry);
-	}
+	//Construct the pretty bar graphs
+	totalCasesContainer.appendChild(totalCasesBar);
+	newCasesContainer.appendChild(newCasesBar);
+	fatalityContainer.appendChild(fatalityIndicator);
+	wealthContainer.appendChild(wealthIndicator);
 	
-	//Put everything together
-	let root = document.querySelector('#root');
-	root.append(title);
-	root.append(logMultiplier);
-	root.append(header);
-	root.append(container);
-	
-	//Assign event listeners
-	//This could be done asynchronously
-	//but it is simpler to do it now, knowing that all divs are in the DOM
-	assignEventListeners();
-}
-
-//GUI functions//
-//Render GUI elements
-let createLogMultiplier = () => {
-	let logMultiplierContainer = webElement({
-		element: 'div',
-		class: 'log-multiplier-container',
-		id: 'log-multiplier-container' 
-	})
-	let logMultiplierIndicator = webElement({
-		element: 'div',
-		class: 'generic-indicator',
-		id: 'log-multiplier-indicator',
-	})
-	
-	logMultiplierContainer.appendChild(logMultiplierIndicator);
-	
-	return logMultiplierContainer;
-}
-
-let createHeader = () => {
-	let header = webElement({element:'div', class: 'header'});
-	header.append(
-		webElement({element: 'div', class: 'header-text', textContent: 'Country'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Inequality Index'})
+	//Construct the entry
+	entry.append(
+		flagImg, 
+		countryName, 
+		totalCasesContainer,
+		newCasesContainer,
+		fatalityContainer,
+		wealthContainer
 	);
-	
-	return header;
+	container.append(entry);
+	}
+
+	return container;
 }
 
 //Event Handlers and Listeners
 let assignEventListeners = () => {
-	//Multiplier for slider
-	let multiplier = document.querySelector('#log-multiplier-container');
-	//create unique attribute for width of slider at init
+	//Create unique attribute for width of slider at init
+	//One day this will no longer be needed, but that day is not today
 	let multiplierIndicator = document.querySelector('#log-multiplier-indicator');
 	multiplierIndicator.absoluteWidth = multiplierIndicator.clientWidth;
-	multiplier.addEventListener('mousemove', slideMultiplier);
+
+	//Custom event for hover functionality
+	let focusSlider = sliderFocusEvent();
+
+	let multiplier = document.querySelector('#log-multiplier-container');
+	multiplier.addEventListener('mousedown', slideMultiplier);
 	
 	//Eventlisteners for all indicators
 	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
 	for(let indicator of fatalityIndicators) {
 		indicator.addEventListener('slidermove', updateFatality);
 	}
+	//Eventlisteners for all bars
 	let allBars = document.querySelectorAll('.totalCases-bar', '.newCases-bar');
 	for(let bar of allBars) {
 		bar.addEventListener('slidermove', updateBar);
 	}
-	
+}
+
+let focusSlider = (event) => {
+	console.log('clicked');
 }
 
 let slideMultiplier = (event) => {
@@ -213,7 +239,7 @@ let slideMultiplier = (event) => {
 	let rightMargin = slider;
 	slider.style.paddingLeft = (offset <= upperBound) ? `${offset}px` : `${upperBound}px`;
 	
-	let slidermove = createSliderEvent(offset);
+	let slidermove = sliderMoveEvent(offset);
 	updateIndicatorsAll(slidermove);
 
 }
@@ -250,7 +276,8 @@ let updateBar = (event) => {
 	bar.style.width = `${adjustedValue}%`;
 }
 
-let createSliderEvent = (value = 1) => {
+//Custom event to update all indicators and bars
+let sliderMoveEvent = (value = 1) => {
 	let slidermove = new CustomEvent(
 		'slidermove',
 		{
@@ -265,9 +292,25 @@ let createSliderEvent = (value = 1) => {
 	return slidermove;
 }
 
+//Custom event to add click and drag to slider
+let sliderFocusEvent = () => {
+	let sliderclick = new CustomEvent(
+		'sliderclick',
+		{
+			detail: {
+				description: 'focus event for hover functionality'
+			},
+			bubbles: true,
+			cancelable: true
+		}
+	);
+	
+	return sliderclick;
+}
+
 //Computation functions//
 let toPercent = (value, total) => {
-	let result = Math.floor( (value / total) * 100 );
+	let result = Math.ceil( (value / total) * 100 );
 	return result;
 }
 
@@ -292,7 +335,7 @@ let getFatality = (countryObject) => {
 	//Return a decimal value of country fatality rate
 	try {
 		let fatality = toPercent(countryObject.TotalDeaths, countryObject.TotalConfirmed);
-		let result = Math.round(fatality);
+		let result = Math.ceil(fatality);
 		return result;
 		
 	} catch (err) {
@@ -316,7 +359,6 @@ let getGINI = (countryCode, data, matrix) => {
 const getCountryData = async (countryCode) => {
 	const response = await fetch('/flags');
 	const data = await response.json();
-	console.log(data);
 	return data;
 }
 
@@ -362,4 +404,3 @@ let webElement = (obj) => {
 
 //Display data and run tests
 display();
-

@@ -15,13 +15,25 @@ const display = async () => {
 	const flagSources = await getCountryData();
 	const giniData = await getWealth();
 	const countryCodeMatrix = await getConversionMatrixJSON();
+<<<<<<< HEAD
 
+=======
+>>>>>>> dev
 	const dataBundle = {
 		worldData: worldData, 
 		flagSources: flagSources, 
 		giniData: giniData, 
 		countryCodeMatrix: countryCodeMatrix
 	};
+<<<<<<< HEAD
+=======
+
+	console.log(createTable(dataBundle));
+	
+	//Constants for use in calculation
+	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
+	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
+>>>>>>> dev
 	
 	//Render title
 	let title = webElement({
@@ -75,7 +87,11 @@ let createHeader = () => {
 		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
+<<<<<<< HEAD
 		webElement({element: 'div', class: 'header-text', textContent: 'Inequality'})
+=======
+		webElement({element: 'div', class: 'header-text', textContent: 'Inequality Index'})
+>>>>>>> dev
 	);
 	
 	return header;
@@ -86,11 +102,14 @@ let createTable = (data) => {
 	const flagSources = data['flagSources'];
 	const giniData = data['giniSources'];
 	const countryCodeMatrix = data['countryCodeMatrix'];
+<<<<<<< HEAD
 
 	//Constants for use in calculation
 	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
 	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
 
+=======
+>>>>>>> dev
 	//Create table
 	let header = createHeader();
 	let container = webElement({
@@ -151,12 +170,20 @@ let createTable = (data) => {
 			id: `${item.CountryCode}-fatality-indicator`
 		})
 	
+<<<<<<< HEAD
 	//Style elements //
+=======
+	//Assign values to elements //
+>>>>>>> dev
 	
 	//Get source image for flag
 	//Slight differences in naming convention of country code
 	let flag = flagSources.filter( c => c.countryCode == item.CountryCode);
 	if (flag) flagImg.src = flag[0].flagSource;
+<<<<<<< HEAD
+=======
+	console.log(flag);
+>>>>>>> dev
 	
 	//Convert total cases to a percentage of highest caseload country
 	let totalCases = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
@@ -194,8 +221,11 @@ let createTable = (data) => {
 	);
 	container.append(entry);
 	}
+<<<<<<< HEAD
 
 	return container;
+=======
+>>>>>>> dev
 }
 
 //Event Handlers and Listeners

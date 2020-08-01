@@ -87,10 +87,6 @@ let createTable = (data) => {
 	const flagSources = data['flagSources'];
 	const giniData = data['giniSources'];
 	const countryCodeMatrix = data['countryCodeMatrix'];
-<<<<<<< HEAD
-
-=======
->>>>>>> master
 	//Constants for use in calculation
 	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
 	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
@@ -204,25 +200,13 @@ let createTable = (data) => {
 
 //Event Handlers and Listeners
 let assignEventListeners = () => {
-<<<<<<< HEAD
-	//Create unique attribute for width of slider at init
-	//One day this will no longer be needed, but that day is not today
-=======
 	console.log(isMouseDown);
 	let multiplier = document.querySelector('#log-multiplier-container');
->>>>>>> master
 	let multiplierIndicator = document.querySelector('#log-multiplier-indicator');
 
 	//Create unique attribute for width of slider
 	multiplierIndicator.absoluteWidth = multiplierIndicator.clientWidth;
 
-<<<<<<< HEAD
-	//Custom event for hover functionality
-	let focusSlider = sliderFocusEvent();
-
-	let multiplier = document.querySelector('#log-multiplier-container');
-	multiplier.addEventListener('mousedown', slideMultiplier);
-=======
 	//Control focus on slider
 	multiplierIndicator.addEventListener('mousedown', focusSlider);
 	multiplier.addEventListener('mouseup', removeFocusSlider);
@@ -230,7 +214,6 @@ let assignEventListeners = () => {
 
 	//Move slider indicator
 	multiplier.addEventListener('mousemove', moveIndicator);
->>>>>>> master
 	
 	//Eventlisteners for all indicators
 	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
@@ -242,28 +225,6 @@ let assignEventListeners = () => {
 	for(let bar of allBars) {
 		bar.addEventListener('slidermove', updateBar);
 	}
-<<<<<<< HEAD
-}
-
-let focusSlider = (event) => {
-	console.log('clicked');
-}
-
-let slideMultiplier = (event) => {
-	//Define slider in DOM
-	let container = document.querySelector('#log-multiplier-container');
-	let slider = document.querySelector('#log-multiplier-indicator');
-	let offset = event.offsetX;
-	
-	//Update slider position
-	let sliderWidth = slider.clientWidth;
-	let upperBound = container.clientWidth - slider.absoluteWidth;
-	let rightMargin = slider;
-	slider.style.paddingLeft = (offset <= upperBound) ? `${offset}px` : `${upperBound}px`;
-	
-	let slidermove = sliderMoveEvent(offset);
-	updateIndicatorsAll(slidermove);
-=======
 }
 
 let focusSlider = (event) => {
@@ -271,7 +232,6 @@ let focusSlider = (event) => {
 	setPosition(indicator, event.offsetX);
 	isMouseDown = true;
 }
->>>>>>> master
 
 let removeFocusSlider = (event) => {
 	isMouseDown = false;

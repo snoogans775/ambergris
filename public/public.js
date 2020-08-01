@@ -8,6 +8,7 @@
 
 //Constants for Event Handlers
 const DAMPENER = 5;
+let isMouseDown = false;
 
 const display = async () => {
 	//Fetching data from API
@@ -21,8 +22,6 @@ const display = async () => {
 		giniData: giniData, 
 		countryCodeMatrix: countryCodeMatrix
 	};
-
-	console.log(createTable(dataBundle));
 	
 	//Render title
 	let title = webElement({
@@ -30,7 +29,7 @@ const display = async () => {
 		textContent: 'Ambergris'
 	})
 	let subtitle = webElement({
-		element: 'h1',
+		element: 'p',
 		textContent: 'Covid-19 Data Tracker'
 	})
 	title.appendChild(subtitle);
@@ -76,7 +75,7 @@ let createHeader = () => {
 		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Inequality Index'})
+		webElement({element: 'div', class: 'header-text', textContent: 'Inequality'})
 	);
 	
 	return header;
@@ -195,20 +194,26 @@ let createTable = (data) => {
 	);
 	container.append(entry);
 	}
+
+	return container;
 }
 
 //Event Handlers and Listeners
 let assignEventListeners = () => {
-	//Create unique attribute for width of slider at init
-	//One day this will no longer be needed, but that day is not today
+	console.log(isMouseDown);
+	let multiplier = document.querySelector('#log-multiplier-container');
 	let multiplierIndicator = document.querySelector('#log-multiplier-indicator');
+
+	//Create unique attribute for width of slider
 	multiplierIndicator.absoluteWidth = multiplierIndicator.clientWidth;
 
-	//Custom event for hover functionality
-	let focusSlider = sliderFocusEvent();
+	//Control focus on slider
+	multiplierIndicator.addEventListener('mousedown', focusSlider);
+	multiplier.addEventListener('mouseup', removeFocusSlider);
+	multiplier.addEventListener('mouseout', removeFocusSlider);
 
-	let multiplier = document.querySelector('#log-multiplier-container');
-	multiplier.addEventListener('mousedown', slideMultiplier);
+	//Move slider indicator
+	multiplier.addEventListener('mousemove', moveIndicator);
 	
 	//Eventlisteners for all indicators
 	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
@@ -223,24 +228,39 @@ let assignEventListeners = () => {
 }
 
 let focusSlider = (event) => {
-	console.log('clicked');
+	let indicator = document.querySelector('#log-multiplier-indicator');
+	setPosition(indicator, event.offsetX);
+	isMouseDown = true;
 }
 
-let slideMultiplier = (event) => {
-	//Define slider in DOM
-	let container = document.querySelector('#log-multiplier-container');
-	let slider = document.querySelector('#log-multiplier-indicator');
-	let offset = event.offsetX;
-	
-	//Update slider position
-	let sliderWidth = slider.clientWidth;
-	let upperBound = container.clientWidth - slider.absoluteWidth;
-	let rightMargin = slider;
-	slider.style.paddingLeft = (offset <= upperBound) ? `${offset}px` : `${upperBound}px`;
-	
-	let slidermove = sliderMoveEvent(offset);
-	updateIndicatorsAll(slidermove);
+let removeFocusSlider = (event) => {
+	isMouseDown = false;
+	console.log(isMouseDown);
+}
 
+let moveIndicator = (event) => {
+	console.log(isMouseDown);
+	if (isMouseDown) {
+		//Define slider from DOM
+		let container = document.querySelector('#log-multiplier-container');
+		let indicator = document.querySelector('#log-multiplier-indicator');
+		let offset = event.offsetX - indicator.absoluteWidth/2;
+		
+		//Update slider position
+		let upperBound = container.clientWidth;
+		//Check for right edge and move
+		let newPosition = (offset <= upperBound) ? `${offset}px` : `${upperBound}px`;
+		setPosition(indicator, newPosition);
+		
+		let slidermove = sliderMoveEvent(offset);
+		updateIndicatorsAll(slidermove);
+	}
+
+}
+
+let setPosition = (indicator, leftOffset) => {
+	//Check for right edge and move
+	indicator.style.paddingLeft = leftOffset;
 }
 
 let updateIndicatorsAll = (event) => {

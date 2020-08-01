@@ -53,23 +53,16 @@ body {
 	height: 0.8rem;
 	max-width: 1.2rem;
 }
-.country {
-	
-}
-.chart {
 
-}
 .totalCases-bar {
 	background: #FF3932;
-	height: 0.2em;
-	padding: 0.1em;
+	height: 100%;
 	max-width: 96%;
 }
 
 .newCases-bar {
 	background: #3239FF;
-	height: 0.2em;
-	padding: 0.1em;
+	height: 100%;
 	max-width: 96%;
 }
 
@@ -84,41 +77,49 @@ body {
 	background: #DDDDDD;
 	border: 1px black;
 	height: 100%;
-	max-width: 1%;
+	max-width: 5%;
 	
+}
+
+#log-multiplier-indicator {
+	background-image: linear-gradient(to right, #FFFFFF, #AAAAAA);
+
 }
 
 .totalCases-barContainer {
 	background: #FFDDE2;
-	height: 0.2em;
-	right-padding: 4%;
+	height: 0.4em;
+	margin-right: 4%;
+	margin-top: 0.2em;
 	max-width: 96%;
 }
 
 .newCases-barContainer {
 	background: #E2DDFF;
-	height: 0.2em;
-	right-padding: 4%;
+	height: 0.4em;
+	margin-right: 4%;
+	margin-top: 0.2em;
 	max-width: 96%;
 }
 
 .wealth-container {
 	background-image: linear-gradient(to right, teal, maroon);
 	height: 0.2em;
-	right-padding: 4%;
+	margin-right: 4%;
+	margin-top: 0.2em;
 	width: 96%;
 }
 
 .log-multiplier-container {
 	background-image: linear-gradient(to right, teal, green);
 	height: 2em;
-	right-padding: 4%;
 	max-width: 100%;
 }
 
 .fatality-container {
 	background-image: linear-gradient(to right, teal, maroon);
 	height: 0.2em;
-	right-padding: 4%;
+	margin-right: 4%;
+	margin-top: 0.2em;
 	max-width: 96%;
 }

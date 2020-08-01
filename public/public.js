@@ -24,10 +24,6 @@ const display = async () => {
 
 	console.log(createTable(dataBundle));
 	
-	//Constants for use in calculation
-	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
-	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
-	
 	//Render title
 	let title = webElement({
 		element: 'h2',
@@ -87,10 +83,15 @@ let createHeader = () => {
 }
 
 let createTable = (data) => {
+	//Data constants
 	const worldData = data['worldData'];
 	const flagSources = data['flagSources'];
 	const giniData = data['giniSources'];
 	const countryCodeMatrix = data['countryCodeMatrix'];
+	//Constants for use in calculation
+	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
+	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
+
 	//Create table
 	let header = createHeader();
 	let container = webElement({

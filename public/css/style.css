@@ -1,12 +1,18 @@
+@media only screen and (max-width: 600px) {
+	#root {
+		width:100%;
+	}
+}
+
 body, html {
 	height: 100%;
-	weight: 100%;
+	max-width: 100%;
 }
 
 body {
 	display: grid;
-  background: #222222;
-  font-family: 'Arial';
+	background: #222222;
+	font-family: 'Arial';
 	color: #CCCCCC;
 }
 
@@ -20,16 +26,11 @@ body {
 	height: 1.5rem;
 }
 
-.header-text {
-	
-}
-
-.container {
+.entry-container {
 	display: grid;
 	grid-template-columns: [entry] 100%;
 	grid-template-rows: auto;
 	row-gap: 0.3em;
-	padding: 0.5rem;
 }
 
 .header {
@@ -39,7 +40,7 @@ body {
 	display: grid;
 	grid-template-columns: [name] 45% [field1] 15% [field2] 15% [field3] 15% [field4] 10%;
 	margin-bottom: 0.2rem;
-	padding: 0.5rem;
+	padding: 0.4rem 0 0.4rem 0.4rem;
 
 }
 
@@ -50,7 +51,7 @@ body {
 
 .flag {
 	height: 0.8rem;
-	width: 1.2rem;
+	max-width: 1.2rem;
 }
 .country {
 	
@@ -62,20 +63,20 @@ body {
 	background: #FF3932;
 	height: 0.2em;
 	padding: 0.1em;
-	width: 96%;
+	max-width: 96%;
 }
 
 .newCases-bar {
 	background: #3239FF;
 	height: 0.2em;
 	padding: 0.1em;
-	width: 96%;
+	max-width: 96%;
 }
 
 .fatality-indicator {
 	background: #DDDDDD;
 	height: 100%;
-	width: 5%;
+	max-width: 5%;
 	
 }
 
@@ -83,8 +84,7 @@ body {
 	background: #DDDDDD;
 	border: 1px black;
 	height: 100%;
-	width: 5%;
-	border-radius: 30px;
+	max-width: 1%;
 	
 }
 
@@ -92,14 +92,14 @@ body {
 	background: #FFDDE2;
 	height: 0.2em;
 	right-padding: 4%;
-	width: 96%;
+	max-width: 96%;
 }
 
 .newCases-barContainer {
 	background: #E2DDFF;
 	height: 0.2em;
 	right-padding: 4%;
-	width: 96%;
+	max-width: 96%;
 }
 
 .wealth-container {
@@ -113,12 +113,12 @@ body {
 	background-image: linear-gradient(to right, teal, green);
 	height: 2em;
 	right-padding: 4%;
-	width: 100%;
+	max-width: 100%;
 }
 
 .fatality-container {
 	background-image: linear-gradient(to right, teal, maroon);
 	height: 0.2em;
 	right-padding: 4%;
-	width: 96%;
+	max-width: 96%;
 }

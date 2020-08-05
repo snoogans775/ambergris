@@ -25,6 +25,13 @@ The GUI is built on vanilla JavaScript with ES6 syntax. This was intended to bui
 lexible object-like system in a server-less architecture. A React / Redux version of 
 this app will be built soon.
 
-- Helping -
+- Next Steps -
 Please contact Kevin Fredericks at kfrednv@gmail.com if you would like to 
-help out. Any push/pull requests will be responded to by Kevin.
+help out. The following features would be nice:
+- Twitter Event emitters via node.js -
+- Drop-down or modal details for country data -
+- A more universal wealth disparity indicator, GINI is about 19 countries -
+- ElasticSearch for comparisons -
+- Adjustable fields for bars/indicators -
+- Fully React components -
+

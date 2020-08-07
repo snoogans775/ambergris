@@ -421,5 +421,5 @@ let webElement = (obj) => {
 	return ele;
 }
 
-//Display data and run tests
+//Display data
 display();

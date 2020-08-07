@@ -82,7 +82,7 @@ body {
 }
 
 #log-multiplier-indicator {
-	background-image: linear-gradient(to right, #FFFFFF, #AAAAAA);
+	border-radius: 30px;
 
 }
 

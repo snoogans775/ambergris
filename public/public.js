@@ -6,42 +6,46 @@
 // OECD GINI scores
 // Transparency International
 
+import * as Compute from './modules/compute.js';
+import * as Get from './modules/requests.js';
+import './modules/nouislider.min.js';
+
 //Constants for Event Handlers
 const DAMPENER = 5;
 let isMouseDown = false;
 
 const display = async () => {
 	//Fetching data from API
-	const worldData = await getWorldCovid();
-	const flagSources = await getCountryData();
-	const giniData = await getWealth();
-	const countryCodeMatrix = await getConversionMatrixJSON();
 	const dataBundle = {
-		worldData: worldData, 
-		flagSources: flagSources, 
-		giniData: giniData, 
-		countryCodeMatrix: countryCodeMatrix
+		worldData: await Get.worldCovid(), 
+		flagSources: await Get.flags(), 
+		giniData: await Get.wealth(), 
+		countryCodeMatrix: await Get.conversionMatrixJSON()
 	};
 	
 	//Render title
-	let title = webElement({
-		element: 'h2',
-		textContent: 'Ambergris'
-	})
-	let subtitle = webElement({
-		element: 'p',
-		textContent: 'Covid-19 Data Tracker'
-	})
-	title.appendChild(subtitle);
+	let head = webElement({element: 'h2', textContent: 'Ambergris'});
+	let subtitle = webElement({element: 'p', textContent: 'Covid-19 Data Tracker'});
+	head.appendChild(subtitle);
 	//Render value multiplier
-	let logMultiplier = createLogMultiplier();
+	let multipleSlider = webElement({element: 'div',id: 'slider'});
 	let table = createTable(dataBundle);
-	
+
 	//Put everything together
 	let root = document.querySelector('#root');
-	root.append(title);
-	root.append(logMultiplier);
+	root.append(head);
+	root.append(multipleSlider);
 	root.append(table);
+
+	//Assign Slider
+	noUiSlider.create(multipleSlider, {
+		start: [1],
+		connect: true,
+		range: {
+			'min': 1,
+			'max': 10
+		}
+	});
 	
 	//Assign event listeners
 	//This could be done asynchronously
@@ -50,24 +54,7 @@ const display = async () => {
 }
 
 //GUI functions//
-//Render GUI elements
-let createLogMultiplier = () => {
-	let logMultiplierContainer = webElement({
-		element: 'div',
-		class: 'log-multiplier-container',
-		id: 'log-multiplier-container' 
-	})
-	let logMultiplierIndicator = webElement({
-		element: 'div',
-		class: 'generic-indicator',
-		id: 'log-multiplier-indicator',
-	})
-	
-	logMultiplierContainer.appendChild(logMultiplierIndicator);
-	
-	return logMultiplierContainer;
-}
-
+//Render elements
 let createHeader = () => {
 	let header = webElement({element:'div', class: 'header'});
 	header.append(
@@ -88,8 +75,8 @@ let createTable = (data) => {
 	const giniData = data['giniSources'];
 	const countryCodeMatrix = data['countryCodeMatrix'];
 	//Constants for use in calculation
-	const MAX_TOTAL_CASES = getMax(worldData.Countries, c => c.TotalConfirmed);
-	const MAX_NEW_CASES = getMax(worldData.Countries, c => c.NewConfirmed);
+	const MAX_TOTAL_CASES = Compute.max(worldData.Countries, c => c.TotalConfirmed);
+	const MAX_NEW_CASES = Compute.max(worldData.Countries, c => c.NewConfirmed);
 
 	//Create table
 	let header = createHeader();

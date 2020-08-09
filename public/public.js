@@ -8,18 +8,15 @@
 
 import * as Compute from './modules/compute.js';
 import * as Get from './modules/requests.js';
+import * as EventHandler from './modules/events.js';
 import './modules/nouislider.min.js';
-
-//Constants for Event Handlers
-const DAMPENER = 5;
-let isMouseDown = false;
 
 const display = async () => {
 	//Fetching data from API
 	const dataBundle = {
 		worldData: await Get.worldCovid(), 
 		flagSources: await Get.flags(), 
-		giniData: await Get.wealth(), 
+		giniData: await Get.gini(), 
 		countryCodeMatrix: await Get.conversionMatrixJSON()
 	};
 	
@@ -27,30 +24,30 @@ const display = async () => {
 	let head = webElement({element: 'h2', textContent: 'Ambergris'});
 	let subtitle = webElement({element: 'p', textContent: 'Covid-19 Data Tracker'});
 	head.appendChild(subtitle);
-	//Render value multiplier
-	let multipleSlider = webElement({element: 'div',id: 'slider'});
+	//Create value multiplier
+	let logSlider = webElement({element: 'div',id: 'logSlider'});
+	//Configure Slider
+	noUiSlider.create(logSlider, {
+		start: [1],
+		connect: true,
+		range: {
+			'min': 1,
+			'max': 50
+		}
+	});
+	//Create table
 	let table = createTable(dataBundle);
 
 	//Put everything together
 	let root = document.querySelector('#root');
 	root.append(head);
-	root.append(multipleSlider);
+	root.append(logSlider);
 	root.append(table);
-
-	//Assign Slider
-	noUiSlider.create(multipleSlider, {
-		start: [1],
-		connect: true,
-		range: {
-			'min': 1,
-			'max': 10
-		}
-	});
 	
 	//Assign event listeners
 	//This could be done asynchronously
 	//but it is simpler to do it now, knowing that all divs are in the DOM
-	assignEventListeners();
+	EventHandler.bind(logSlider);
 }
 
 //GUI functions//
@@ -74,9 +71,8 @@ let createTable = (data) => {
 	const flagSources = data['flagSources'];
 	const giniData = data['giniSources'];
 	const countryCodeMatrix = data['countryCodeMatrix'];
-	//Constants for use in calculation
-	const MAX_TOTAL_CASES = Compute.max(worldData.Countries, c => c.TotalConfirmed);
-	const MAX_NEW_CASES = Compute.max(worldData.Countries, c => c.NewConfirmed);
+
+	console.log(giniData);
 
 	//Create table
 	let header = createHeader();
@@ -137,6 +133,10 @@ let createTable = (data) => {
 			class: 'fatality-indicator',
 			id: `${item.CountryCode}-fatality-indicator`
 		})
+
+	//Constants for use in calculation
+	const MAX_TOTAL_CASES = Compute.max(worldData.Countries, c => c.TotalConfirmed);
+	const MAX_NEW_CASES = Compute.max(worldData.Countries, c => c.NewConfirmed);
 	
 	//Style elements //
 	
@@ -183,135 +183,6 @@ let createTable = (data) => {
 	}
 
 	return container;
-}
-
-//Event Handlers and Listeners
-let assignEventListeners = () => {
-	console.log(isMouseDown);
-	let multiplier = document.querySelector('#log-multiplier-container');
-	let multiplierIndicator = document.querySelector('#log-multiplier-indicator');
-
-	//Create unique attribute for width of slider
-	multiplierIndicator.absoluteWidth = multiplierIndicator.clientWidth;
-
-	//Control focus on slider
-	multiplierIndicator.addEventListener('mousedown', focusSlider);
-	multiplier.addEventListener('mouseup', removeFocusSlider);
-	multiplier.addEventListener('mouseout', removeFocusSlider);
-
-	//Move slider indicator
-	multiplier.addEventListener('mousemove', moveIndicator);
-	
-	//Eventlisteners for all indicators
-	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
-	for(let indicator of fatalityIndicators) {
-		indicator.addEventListener('slidermove', updateFatality);
-	}
-	//Eventlisteners for all bars
-	let allBars = document.querySelectorAll('.totalCases-bar', '.newCases-bar');
-	for(let bar of allBars) {
-		bar.addEventListener('slidermove', updateBar);
-	}
-}
-
-let focusSlider = (event) => {
-	let indicator = document.querySelector('#log-multiplier-indicator');
-	setPosition(indicator, event.offsetX);
-	isMouseDown = true;
-}
-
-let removeFocusSlider = (event) => {
-	isMouseDown = false;
-	console.log(isMouseDown);
-}
-
-let moveIndicator = (event) => {
-	console.log(isMouseDown);
-	if (isMouseDown) {
-		//Define slider from DOM
-		let container = document.querySelector('#log-multiplier-container');
-		let indicator = document.querySelector('#log-multiplier-indicator');
-		let offset = event.offsetX - indicator.absoluteWidth/2;
-		
-		//Update slider position
-		let upperBound = container.clientWidth;
-		//Check for right edge and move
-		let newPosition = (offset <= upperBound) ? `${offset}px` : `${upperBound}px`;
-		setPosition(indicator, newPosition);
-		
-		let slidermove = sliderMoveEvent(offset);
-		updateIndicatorsAll(slidermove);
-	}
-
-}
-
-let setPosition = (indicator, leftOffset) => {
-	//Check for right edge and move
-	indicator.style.paddingLeft = leftOffset;
-}
-
-let updateIndicatorsAll = (event) => {
-	//Update fatality indicators
-	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
-	for(let indicator of fatalityIndicators){
-		indicator.dispatchEvent(event);
-	}
-	let totalCasesBars = document.querySelectorAll('.totalCases-bar');
-	for(let bar of totalCasesBars){
-		bar.dispatchEvent(event);
-	}
-}
-
-let updateFatality = (event) => {
-	const dampener = DAMPENER; //Higher values dampen the effect
-	let indicator = event.target;
-	let multiplier = Compute.naturalLog(event.detail.value, dampener);
-	let adjustedValue = Compute.naturalLog(indicator.value, multiplier);
-	
-	//Update indicator
-	indicator.style.marginLeft = `${adjustedValue}%`;
-}
-
-let updateBar = (event) => {
-	const dampener = DAMPENER; //Higher values dampen the effect
-	let bar = event.target;
-	let multiplier = Compute.naturalLog(event.detail.value, dampener);
-	let adjustedValue = Compute.naturalLog(bar.value, multiplier);
-	
-	//Update indicator
-	bar.style.width = `${adjustedValue}%`;
-}
-
-//Custom event to update all indicators and bars
-let sliderMoveEvent = (value = 1) => {
-	let slidermove = new CustomEvent(
-		'slidermove',
-		{
-			detail: {
-				value: value
-			},
-			bubbles: true,
-			cancelable: true
-		}
-	);
-	
-	return slidermove;
-}
-
-//Custom event to add click and drag to slider
-let sliderFocusEvent = () => {
-	let sliderclick = new CustomEvent(
-		'sliderclick',
-		{
-			detail: {
-				description: 'focus event for hover functionality'
-			},
-			bubbles: true,
-			cancelable: true
-		}
-	);
-	
-	return sliderclick;
 }
 
 //Custom webElement Creator

@@ -146,21 +146,21 @@ let createTable = (data) => {
 	if (flag) flagImg.src = flag[0].flagSource;
 	
 	//Convert total cases to a percentage of highest caseload country
-	let totalCases = toPercent(item.TotalConfirmed, MAX_TOTAL_CASES);
+	let totalCases = Compute.percent(item.TotalConfirmed, MAX_TOTAL_CASES);
 	totalCasesBar.value = totalCases;
 	totalCasesBar.style.width = `${totalCases}%`;
 	
 	//Convert total cases to a percentage of highest caseload country
-	let newCases = toPercent(item.NewConfirmed, MAX_NEW_CASES);
+	let newCases = Compute.percent(item.NewConfirmed, MAX_NEW_CASES);
 	newCasesBar.value = newCases;
 	newCasesBar.style.width = `${newCases}%`;
 	
 	//Place wealth disparity indicator according to GINI score
-	let giniScore = getGINI(item.CountryCode, giniData, countryCodeMatrix);
+	let giniScore = Compute.GINI(item.CountryCode, giniData, countryCodeMatrix);
 	wealthIndicator.style.marginLeft = `${giniScore}%`;
 	
 	//Place fatality indicator
-	let fatality = getFatality(item);
+	let fatality = Compute.fatality(item);
 	fatalityIndicator.value = fatality;
 	fatalityIndicator.style.marginLeft = `${fatality}%`;
 
@@ -265,8 +265,8 @@ let updateIndicatorsAll = (event) => {
 let updateFatality = (event) => {
 	const dampener = DAMPENER; //Higher values dampen the effect
 	let indicator = event.target;
-	let multiplier = getNaturalLog(event.detail.value, dampener);
-	let adjustedValue = getNaturalLog(indicator.value, multiplier);
+	let multiplier = Compute.naturalLog(event.detail.value, dampener);
+	let adjustedValue = Compute.naturalLog(indicator.value, multiplier);
 	
 	//Update indicator
 	indicator.style.marginLeft = `${adjustedValue}%`;
@@ -275,8 +275,8 @@ let updateFatality = (event) => {
 let updateBar = (event) => {
 	const dampener = DAMPENER; //Higher values dampen the effect
 	let bar = event.target;
-	let multiplier = getNaturalLog(event.detail.value, dampener);
-	let adjustedValue = getNaturalLog(bar.value, multiplier);
+	let multiplier = Compute.naturalLog(event.detail.value, dampener);
+	let adjustedValue = Compute.naturalLog(bar.value, multiplier);
 	
 	//Update indicator
 	bar.style.width = `${adjustedValue}%`;

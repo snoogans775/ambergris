@@ -17,7 +17,7 @@ export function max(data, filter) {
 	}
 }
 
-export function getNaturalLog(value, multiplier = 1) {
+export function naturalLog(value, multiplier = 1) {
 	return ( Math.log(value) * multiplier ) + 0.5;
 }
 

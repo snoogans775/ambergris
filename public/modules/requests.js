@@ -17,7 +17,7 @@ export const usaCovid = async () => {
 	return data;
 }
 
-export const wealth = async () => {
+export const gini = async () => {
 	const response = await fetch('/gini');
 	const data = await response.json();
 	return data;

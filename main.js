@@ -6,15 +6,16 @@ const csvtojson = require('csvtojson');
 const helmet = require('helmet');
 
 //Routes
-const covidRouter = require('./routes/covidTracking');
+const router = require('./routes/indexRouter');
 
 //Production port configuration
-const server_port = process.env.PORT || 3000;
+const serverPort = process.env.PORT || 3000;
 
 //Initialize express server
 const app = express();
-app.listen(server_port, () => console.log('listening @ 3000'));
+app.listen(serverPort, () => console.log(`listening @ ${serverPort}` ));
 app.use(express.static('public'));
+app.use(router);
 app.use(express.json({limit: '1mb'}));
 app.use( helmet() );
 
@@ -83,7 +84,6 @@ app.get('/flags', async (request, response) => {
 		
 	});
 })
-
 //External API methods
 
 let getWorldDataUrl = (option = 0) => {

@@ -16,7 +16,7 @@ const display = async () => {
 	const dataBundle = {
 		worldData: await Get.worldCovid(), 
 		flagSources: await Get.flags(), 
-		giniData: await Get.gini(), 
+		countryDetails: await Get.countryDetails(), 
 		countryCodeMatrix: await Get.conversionMatrixJSON()
 	};
 	
@@ -24,6 +24,8 @@ const display = async () => {
 	let head = webElement({element: 'h2', textContent: 'Ambergris'});
 	let subtitle = webElement({element: 'p', textContent: 'Covid-19 Data Tracker'});
 	head.appendChild(subtitle);
+	//Create UI
+	let ui = createUI(dataBundle.countryDetails);
 	//Create value multiplier
 	let logSlider = webElement({element: 'div',id: 'logSlider'});
 	//Configure Slider
@@ -41,6 +43,7 @@ const display = async () => {
 	//Put everything together
 	let root = document.querySelector('#root');
 	root.append(head);
+	root.append(ui);
 	root.append(logSlider);
 	root.append(table);
 	
@@ -65,14 +68,37 @@ let createHeader = () => {
 	return header;
 }
 
+let createUI = (data) => {
+	let ui = webElement({element: 'div', id: 'ui-container'});
+	//Create region selector
+	let regionLabel = webElement({
+		element: 'div', 
+		id: 'region-selector-label',
+		textContent: 'Region'
+	});
+	let regionSelector = webElement({element: 'select', id: 'region-selector'});
+	let regions = [...new Set(data.map( c => c.region ))];
+	regions.map(region => {
+		let option =  webElement({
+			element: 'option',
+			value: region,
+			textContent: region
+		});
+		regionSelector.appendChild(option);
+	});
+
+	//Put it all together
+	ui.append(regionLabel, regionSelector);
+
+	return ui;
+}
+
 let createTable = (data) => {
 	//Data constants
 	const worldData = data['worldData'];
 	const flagSources = data['flagSources'];
-	const giniData = data['giniSources'];
+	const countryDetails = data['countryDetails'];
 	const countryCodeMatrix = data['countryCodeMatrix'];
-
-	console.log(giniData);
 
 	//Create table
 	let header = createHeader();
@@ -81,6 +107,8 @@ let createTable = (data) => {
 		class: 'entry-container'
 	});
 	container.append(header);
+
+	let dataSet = worldData.Countries;
 
 	// Create contents of current entry
 	for (let item of worldData.Countries ) {
@@ -156,7 +184,7 @@ let createTable = (data) => {
 	newCasesBar.style.width = `${newCases}%`;
 	
 	//Place wealth disparity indicator according to GINI score
-	let giniScore = Compute.GINI(item.CountryCode, giniData, countryCodeMatrix);
+	let giniScore = Compute.GINI(item.CountryCode, countryDetails, countryCodeMatrix);
 	wealthIndicator.style.marginLeft = `${giniScore}%`;
 	
 	//Place fatality indicator

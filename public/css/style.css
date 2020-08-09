@@ -45,6 +45,10 @@ body {
 
 }
 
+#ui-container {
+	margin-bottom: 1em;
+}
+
 .entry {
 	display: grid;
 	grid-template-columns: [flag] 10% [name] 35% [total] 15% [new] 15% [fatality] 15% [field4] 10%;

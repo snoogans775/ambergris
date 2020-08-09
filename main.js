@@ -51,21 +51,6 @@ app.get('/usa', async (request, response) => {
 })
 
 //Local File Methods
-//Get inequality data
-app.get('/gini', async (request, response) => {
-	let file = 'data/GINI.csv';
-	console.log(`${file} requested`);
-	//Convert CSV to JSON
-	csvtojson()
-		.fromFile(file)
-		.then((json) => {
-			//Filter out all but most recent year
-			res = filterRecentYear(json);
-			//Move all children up a level
-			inverted = res.map( line => line = line[0]);
-			response.json(inverted);
-		})
-})
 
 //Country code conversion matrix
 app.get('/countryCodeMatrix', async (request, response) => {
@@ -81,6 +66,17 @@ app.get('/flags', async (request, response) => {
 		if (err) throw err;
 		let flagSources = JSON.parse(data);
 		response.json(flagSources);
+		
+	});
+})
+
+//Detailed country data
+app.get('/countryDetails', async (request, response) => {
+	let file = 'data/countryData.json';
+	fs.readFile(file, (err, data) => {
+		if (err) throw err;
+		let countryDetails = JSON.parse(data);
+		response.json(countryDetails);
 		
 	});
 })
@@ -153,25 +149,6 @@ let mergeRecentEntry =  (result) => {
 }
 
 //Conversion Functions//
-//Function for conversion of GINI data to simplified format
-//Only distinct years that are the 
-let filterRecentYear = (data, year) => {
-	let result = [];
-	let log = []
-	try {
-		countryArray = [...new Set(data.map( x => x.LOCATION ))];
-		countryArray.forEach( (country) => {
-			let subset = data.filter( line => line.LOCATION == country);
-			let recentYearAsString = getMax(subset, c => parseInt(c.TIME));
-			result.push( subset.filter( y => y.TIME == recentYearAsString));
-			
-		});
-	} catch(err) {
-		console.error(err);
-	}
-	
-	return result;
-}
 
 //Conversion of country metadata to country codes and flag sources
 let extractFlags = () => {
@@ -196,20 +173,7 @@ let extractFlags = () => {
 		
 	});
 }
-
-let getMax = (data, filter) => {
-	let max = 0;
-	try {
-		for( item of data ) {
-			if (filter(item) > max) {max = filter(item)};
-		}
-		return max;
-		
-	} catch (err) {
-		console.error(err);
-	}
-}
-// Update database at interval of 10 minutes
+// Update database at interval of 1 day
 //updateWorldDatabase(); //Update on init
 setInterval( async () => updateWorldDatabase(), 2400 * 1000);
 
@@ -228,5 +192,40 @@ app.post('/world'), async (request, response) => {
 	} catch (err) {
 		console.log(err);
 	}
+}
+
+//Get inequality data
+app.get('/gini', async (request, response) => {
+	let file = 'data/GINI.csv';
+	console.log(`${file} requested`);
+	//Convert CSV to JSON
+	csvtojson()
+		.fromFile(file)
+		.then((json) => {
+			//Filter out all but most recent year
+			res = filterRecentYear(json);
+			//Move all children up a level
+			inverted = res.map( line => line = line[0]);
+			console.log(inverted);
+			response.json(inverted);
+		})
+})
+
+//Function for conversion of GINI data to simplified format
+let filterRecentYear = (data, year) => {
+	let result = [];
+	try {
+		countryArray = [...new Set(data.map( x => x.LOCATION ))];
+		countryArray.forEach( (country) => {
+			let subset = data.filter( line => line.LOCATION == country);
+			let recentYearAsString = compute.max(subset, c => parseInt(c.TIME));
+			result.push( subset.filter( y => y.TIME == recentYearAsString));
+			
+		});
+	} catch(err) {
+		console.error(err);
+	}
+	
+	return result;
 }
 */

@@ -24,8 +24,6 @@ const display = async () => {
 	let head = webElement({element: 'h2', textContent: 'Ambergris'});
 	let subtitle = webElement({element: 'p', textContent: 'Covid-19 Data Tracker'});
 	head.appendChild(subtitle);
-	//Create UI
-	let ui = createUI(dataBundle.countryDetails);
 	//Create value multiplier
 	let logSlider = webElement({element: 'div',id: 'logSlider'});
 	//Configure Slider
@@ -43,7 +41,6 @@ const display = async () => {
 	//Put everything together
 	let root = document.querySelector('#root');
 	root.append(head);
-	root.append(ui);
 	root.append(logSlider);
 	root.append(table);
 	
@@ -90,6 +87,9 @@ let createUI = (data) => {
 	//Put it all together
 	ui.append(regionLabel, regionSelector);
 
+	//Bind event handlers
+	EventHandler.bind(regionSelector);
+
 	return ui;
 }
 
@@ -104,7 +104,8 @@ let createTable = (data) => {
 	let header = createHeader();
 	let container = webElement({
 		element: 'div', 
-		class: 'entry-container'
+		class: 'entry-container',
+		id: 'country-table'
 	});
 	container.append(header);
 

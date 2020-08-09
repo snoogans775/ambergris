@@ -1,4 +1,7 @@
 import * as Compute from './compute.js';
+import * as Get from './requests.js';
+
+const DAMPENER = 5; //Used for naturalLog computation
 
 //Event Handlers and Listeners
 export function bind(element) {
@@ -8,12 +11,26 @@ export function bind(element) {
             var event = sliderMoveEvent(values[handle]);
             document.dispatchEvent(event);
         })
-        document.addEventListener('slidermove', (e) => updateIndicators(e));
-    break;
+        document.addEventListener('slidermove', e => updateIndicators(e));
+        break;
+    case 'region-selector':
+        element.addEventListener('change', e => filterTable(e));
+        break;
     }
 }
 
+function filterCountries(e) {
+    let table = document.querySelector('#country-table');
+    //We perform another get request so that we have the country data in this
+    //module. The country data should ideally be sent to the event handler.
+    let countryData = Get.countryDetails();
+    let filtered = countryData.map(c => c.region === e.target.value);
+    console.log(filtered);
+
+}
+
 function updateIndicators(event) {
+    
 	//Update indicators
 	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
 	for(let indicator of fatalityIndicators){
@@ -27,7 +44,6 @@ function updateIndicators(event) {
 }
 
 function updateFatality(element, value) {
-	const DAMPENER = 5; //Higher values dampen the effect
 	let indicator = element;
 	let multiplier = Compute.naturalLog(value, DAMPENER);
 	let adjustedValue = Compute.naturalLog(indicator.value, multiplier);
@@ -37,7 +53,6 @@ function updateFatality(element, value) {
 }
 
 function updateBar(element, value) {
-	const DAMPENER = 5; //Higher values dampen the effect
 	let bar = element;
 	let multiplier = Compute.naturalLog(value, DAMPENER);
 	let adjustedValue = Compute.naturalLog(bar.value, multiplier);

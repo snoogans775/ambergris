@@ -28,3 +28,9 @@ export const conversionMatrixJSON = async () => {
 	const data = await response.json();
 	return data;
 }
+
+export const countryDetails = async () => {
+	const response = await fetch('/countryDetails');
+	const data = await response.json();
+	return data;
+}

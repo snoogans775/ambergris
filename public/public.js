@@ -75,7 +75,7 @@ let createHeader = () => {
 		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Inequality'})
+		webElement({element: 'div', class: 'header-text', textContent: 'GINI'})
 	);
 	
 	return header;

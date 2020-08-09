@@ -36,22 +36,25 @@ body {
 .header {
 	background: #DDDDDD;
 	color: #000000;
-	font-size: 12px;
+	font-size: 2vmin;
 	display: grid;
 	grid-template-columns: [name] 45% [field1] 15% [field2] 15% [field3] 15% [field4] 10%;
 	margin-bottom: 0.2rem;
 	padding: 0.4rem 0 0.4rem 0.4rem;
+	word-wrap: clip;
 
 }
 
 .entry {
 	display: grid;
-	grid-template-columns: [flag] 5% [name] 40% [total] 15% [new] 15% [fatality] 15% [field4] 10%;
+	grid-template-columns: [flag] 10% [name] 35% [total] 15% [new] 15% [fatality] 15% [field4] 10%;
+	font-size: 2vmin;
 }
 
 .flag {
 	height: 0.8rem;
-	max-width: 1.2rem;
+	max-width: 100%;
+	min-width: 0.4rem
 }
 
 .totalCases-bar {

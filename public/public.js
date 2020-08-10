@@ -6,13 +6,16 @@
 // OECD GINI scores
 // Transparency International
 
-import * as Compute from './modules/compute.js';
 import * as Get from './modules/requests.js';
 import * as EventHandler from './modules/events.js';
+import TableView from './modules/TableView.js';
+import webElement from './modules/webElement.js';
+import UI from './modules/ui.js';
 import './modules/nouislider.min.js';
 
 const display = async () => {
 	//Fetching data from API
+	//This syntax only works within an async scope
 	const dataBundle = {
 		worldData: await Get.worldCovid(), 
 		flagSources: await Get.flags(), 

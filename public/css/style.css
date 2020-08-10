@@ -36,7 +36,7 @@ body {
 .header {
 	background: #DDDDDD;
 	color: #000000;
-	font-size: 2vmin;
+	font-size: 0.8em;
 	display: grid;
 	grid-template-columns: [name] 45% [field1] 15% [field2] 15% [field3] 15% [field4] 10%;
 	margin-bottom: 0.2rem;
@@ -49,10 +49,14 @@ body {
 	margin-bottom: 1em;
 }
 
+.ui-element {
+	margin: 10px 0;
+}
+
 .entry {
 	display: grid;
 	grid-template-columns: [flag] 10% [name] 35% [total] 15% [new] 15% [fatality] 15% [field4] 10%;
-	font-size: 2vmin;
+	font-size: 0.8em;
 }
 
 .flag {

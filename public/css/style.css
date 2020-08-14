@@ -1,6 +1,8 @@
 @media only screen and (max-width: 600px) {
 	#root {
 		width:100%;
+		font-size: 0.6em;
+		padding: 0rem;
 	}
 }
 
@@ -16,8 +18,21 @@ body {
 	color: #CCCCCC;
 }
 
+h1 {
+	display: inline-block;
+	font-size: large;
+	float: right;
+}
+
+p {
+	display: inline-block;
+	font-size: small;
+	float: right;
+	padding-right: 1em;
+}
+
 #root {
-	width: 70%;
+	width: 80%;
 	margin: 0 auto;
 	padding: 0.5rem;
 }

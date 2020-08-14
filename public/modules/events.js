@@ -14,18 +14,32 @@ export function bind(element) {
         document.addEventListener('slidermove', e => updateIndicators(e));
         break;
     case 'region-selector':
-        element.addEventListener('change', e => filterTable(e));
-        break;
+        element.addEventListener('change', e => dispatchRegionChange(e));
+		break;
+	case 'country-table':
+		element.addEventListener('regionchange', e => filterTable(e));
     }
 }
 
-function filterCountries(e) {
-    let table = document.querySelector('#country-table');
-    //We perform another get request so that we have the country data in this
-    //module. The country data should ideally be sent to the event handler.
-    let countryData = Get.countryDetails();
-    let filtered = countryData.map(c => c.region === e.target.value);
-    console.log(filtered);
+function dispatchRegionChange(event) {
+	let table = document.querySelector('#country-table');
+	let regionChange = regionChangeEvent(event.region);
+	table.dispatchEvent(regionChange);
+
+}
+
+function filterTable(event) {
+	let table = event.target;
+	let entries = table.children;
+	console.log(entries);
+	for( let entry of entries ) {
+		if (entry.class == '') break;
+		if (entry.class == 'entry') {
+			let element = document.querySelector(entry.id);
+			element.style.display = 'none';
+		}
+	};
+	
 
 }
 
@@ -75,4 +89,20 @@ function sliderMoveEvent(value = 1) {
 	);
 	
 	return slidermove;
+}
+
+//Custom event to update all indicators and bars
+function regionChangeEvent(region = null) {
+	let regionChange = new CustomEvent(
+		'regionchange',
+		{
+			detail: {
+				region: region
+			},
+			bubbles: true,
+			cancelable: true
+		}
+	);
+	
+	return regionChange;
 }

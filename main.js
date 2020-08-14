@@ -3,10 +3,9 @@ const Datastore = require('nedb');
 const fetch = require('node-fetch');
 const fs = require('fs');
 const csvtojson = require('csvtojson');
+const path = require('path');
+const favicon = require('express-favicon');
 const helmet = require('helmet');
-
-//Routes
-const router = require('./routes/indexRouter');
 
 //Production port configuration
 const serverPort = process.env.PORT || 3000;
@@ -15,8 +14,8 @@ const serverPort = process.env.PORT || 3000;
 const app = express();
 app.listen(serverPort, () => console.log(`listening @ ${serverPort}` ));
 app.use(express.static('public'));
-app.use(router);
 app.use(express.json({limit: '1mb'}));
+app.use(favicon(path.join(__dirname + 'public', 'favicon.ico')));
 app.use( helmet() );
 
 //Initialize world database
@@ -77,6 +76,17 @@ app.get('/countryDetails', async (request, response) => {
 		if (err) throw err;
 		let countryDetails = JSON.parse(data);
 		response.json(countryDetails);
+		
+	});
+})
+
+//Gini from country data
+app.get('/gini', async (request, response) => {
+	let file = 'data/countryData.json';
+	fs.readFile(file, (err, data) => {
+		if (err) throw err;
+		//data.filter(c => !isNaN(c.gini));
+		response.json(data);
 		
 	});
 })

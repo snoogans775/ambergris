@@ -1,4 +1,5 @@
 import webElement from './webelement.js';
+import * as EventHandler from './events.js';
 import * as Compute from './compute.js';
 
 export default function TableView(data) {
@@ -6,7 +7,6 @@ export default function TableView(data) {
     const worldData = data['worldData'];
     const flagSources = data['flagSources'];
     const countryDetails = data['countryDetails'];
-    const countryCodeMatrix = data['countryCodeMatrix'];
     
     //Create table
     let header = createHeader();
@@ -51,13 +51,9 @@ export default function TableView(data) {
             class: 'newCases-bar',
             id: `${item.CountryCode}-new-cases-bar`
         });
-        let wealthContainer = webElement({
+        let regionContainer = webElement({
             element: 'div',
-            class: 'wealth-container'
-        })
-        let wealthIndicator = webElement({
-            element: 'div',
-            class: 'generic-indicator'
+            class: 'region-container'
         })
         let fatalityContainer = webElement({
             element: 'div',
@@ -90,9 +86,9 @@ export default function TableView(data) {
     newCasesBar.value = newCases;
     newCasesBar.style.width = `${newCases}%`;
     
-    //Place wealth disparity indicator according to GINI score
-    let giniScore = Compute.GINI(item.CountryCode, countryDetails, countryCodeMatrix);
-    wealthIndicator.style.marginLeft = `${giniScore}%`;
+    //Show region
+    let country = countryDetails.filter( c => c.alpha2Code == item.CountryCode);
+    regionContainer.textContent = country[0].region;
     
     //Place fatality indicator
     let fatality = Compute.fatality(item);
@@ -103,7 +99,6 @@ export default function TableView(data) {
     totalCasesContainer.appendChild(totalCasesBar);
     newCasesContainer.appendChild(newCasesBar);
     fatalityContainer.appendChild(fatalityIndicator);
-    wealthContainer.appendChild(wealthIndicator);
     
     //Construct the entry
     entry.append(
@@ -112,10 +107,11 @@ export default function TableView(data) {
         totalCasesContainer,
         newCasesContainer,
         fatalityContainer,
-        wealthContainer
+        regionContainer
     );
     container.append(entry);
     }
+    EventHandler.bind(container);
 
     return container;
 }
@@ -127,11 +123,12 @@ function createHeader(fields = null) {
 		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
 		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'GINI'})
+		webElement({element: 'div', class: 'header-text', textContent: 'Region'})
 	);
 	
 	return header;
 }
 
+//A possible refactor for the styling methods
 export function applyStyles(styleBundle) {
 }

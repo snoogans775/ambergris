@@ -34,7 +34,7 @@ export function fatality(countryObject) {
 	}
 }
 
-export function GINI(countryCode, data, matrix) {
+export function gini(countryCode, data, matrix) {
 	try {
 		//Check for shortened country codes
 		let code = matrix.filter( line => line.AlphaTwo == countryCode)[0].AlphaThree;

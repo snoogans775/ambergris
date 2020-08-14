@@ -7,7 +7,6 @@
 // Transparency International
 
 import * as Get from './modules/requests.js';
-import * as EventHandler from './modules/events.js';
 import TableView from './modules/TableView.js';
 import webElement from './modules/webElement.js';
 import UI from './modules/ui.js';
@@ -24,9 +23,8 @@ const display = async () => {
 	};
 	
 	//Render title
-	let head = webElement({element: 'h2', textContent: 'Ambergris'});
+	let head = webElement({element: 'h1', textContent: 'Ambergris'});
 	let subtitle = webElement({element: 'p', textContent: 'Covid-19 Data Tracker'});
-	head.appendChild(subtitle);
 
 	//Create UI
 	let ui = UI(dataBundle);
@@ -37,6 +35,7 @@ const display = async () => {
 	//Put everything together
 	let root = document.querySelector('#root');
 	root.append(head);
+	root.append(subtitle);
 	root.append(ui);
 	root.append(table);
 }

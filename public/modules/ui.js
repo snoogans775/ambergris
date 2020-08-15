@@ -69,7 +69,7 @@ function regionSelector(data) {
 	let regionLabel = webElement({
 		element: 'div', 
 		id: 'region-selector-label',
-		textContent: 'Subregion'
+		textContent: 'Region'
     });
     
 	let selector = webElement({
@@ -77,12 +77,12 @@ function regionSelector(data) {
         id: 'region-selector'
     });
 
-	let subregions = [...new Set(data.map( c => c.subregion ))];
-	subregions.map(subregion => {
+	let regions = [...new Set(data.map( c => c.region ))];
+	regions.map(region => {
 		let option =  webElement({
 			element: 'option',
-			value: subregion,
-			textContent: subregion
+			value: region,
+			textContent: region
 		});
 		selector.appendChild(option);
     });

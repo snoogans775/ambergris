@@ -23,20 +23,26 @@ export function bind(element) {
 
 function dispatchRegionChange(event) {
 	let table = document.querySelector('#country-table');
-	let regionChange = regionChangeEvent(event.region);
+	//event.target.value is the selected region
+	let regionChange = regionChangeEvent(event.target.value);
 	table.dispatchEvent(regionChange);
 
 }
 
 function filterTable(event) {
+	console.log(event);
 	let table = event.target;
-	let entries = table.children;
-	console.log(entries);
-	for( let entry of entries ) {
-		if (entry.class == '') break;
-		if (entry.class == 'entry') {
-			let element = document.querySelector(entry.id);
-			element.style.display = 'none';
+	let elements = table.children;
+	for( let element of elements ) {
+		if (element === null) continue;
+		if (element.className != 'entry') continue;
+
+		let countryRegion = element.children[5].innerText;
+		if (countryRegion != event.detail.region) {
+			element.style.display = 'None';
+		}
+		else {
+			element.style.display = 'grid';
 		}
 	};
 	
@@ -92,7 +98,7 @@ function sliderMoveEvent(value = 1) {
 }
 
 //Custom event to update all indicators and bars
-function regionChangeEvent(region = null) {
+function regionChangeEvent(region) {
 	let regionChange = new CustomEvent(
 		'regionchange',
 		{

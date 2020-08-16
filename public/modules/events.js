@@ -30,6 +30,8 @@ function dispatchRegionChange(event) {
 }
 
 function filterTable(event) {
+	//Not a pure function, could be refactored to pass an
+	//object to a newly rendered TableView
 	console.log(event);
 	let table = event.target;
 	let elements = table.children;
@@ -38,10 +40,12 @@ function filterTable(event) {
 		if (element.className != 'entry') continue;
 
 		let countryRegion = element.children[5].innerText;
-		if (countryRegion != event.detail.region) {
+		console.log(event.detail.region);
+		if (event.detail.region == 'Global') {
+			element.style.display = 'grid';
+		} else if (countryRegion != event.detail.region) {
 			element.style.display = 'None';
-		}
-		else {
+		} else {
 			element.style.display = 'grid';
 		}
 	};

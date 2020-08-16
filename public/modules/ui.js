@@ -61,6 +61,7 @@ function logarithmicSlider() {
 }
 
 function regionSelector(data) {
+    //The data is the countryData object
     let container = webElement({
         element: 'div',
         class: 'ui-element'
@@ -79,11 +80,23 @@ function regionSelector(data) {
 
 	let regions = [...new Set(data.map( c => c.region ))];
 	regions.map(region => {
-		let option =  webElement({
-			element: 'option',
-			value: region,
-			textContent: region
-		});
+        let option = {};
+        if( region != '') {
+            option =  webElement({
+                element: 'option',
+                value: region,
+                textContent: region
+            });
+        }
+        else {
+            option =  webElement({
+                element: 'option',
+                value: 'Global',
+                textContent: 'Global'
+            });
+        }
+        //Replace blank region with 'Global'
+        
 		selector.appendChild(option);
     });
 

@@ -3,8 +3,8 @@
 A Node.js powered dashboard for Covid-19 Data Analysis
 
 This Covid-19 dashboard is intended to visualize data concerning the
-2020 Covid-19 epidemic. The Covid-19 Tracking Project API is cached at regular
-intervals for international data.
+2020 Covid-19 epidemic.
+https://ambergris-covid.herokuapp.com/
 
 ## Dependencies
 - Node.js (v10+)
@@ -33,5 +33,5 @@ help out. The following features would be nice:
 - A more universal wealth disparity indicator, GINI is about 19 countries -
 - ElasticSearch for comparisons -
 - Adjustable fields for bars/indicators -
-- Fully React components -
+- React components -
 

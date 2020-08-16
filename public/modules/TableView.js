@@ -1,4 +1,4 @@
-import webElement from './webelement.js';
+import WebElement from './WebElement.js';
 import * as EventHandler from './events.js';
 import * as Compute from './compute.js';
 
@@ -10,7 +10,7 @@ export default function TableView(data) {
     
     //Create table
     let header = createHeader();
-    let container = webElement({
+    let container = WebElement({
         element: 'div', 
         class: 'entry-container',
         id: 'country-table'
@@ -19,47 +19,47 @@ export default function TableView(data) {
 
     // Create contents of current entry
     for (let item of worldData.Countries ) {
-        let entry = webElement({
+        let entry = WebElement({
             element: 'div', 
             class: 'entry',
             id: `${item.CountryCode}-entry`
         });
-        let flagImg = webElement({
+        let flagImg = WebElement({
             element: 'img', 
             class: 'flag', 
         });
-        let countryName = webElement({
+        let countryName = WebElement({
             element: 'div', 
             class: 'country-name', 
             textContent: item.Country
         });
-        let totalCasesContainer = webElement({
+        let totalCasesContainer = WebElement({
             element: 'div',
             class: 'totalCases-barContainer',
         })
-        let totalCasesBar = webElement({
+        let totalCasesBar = WebElement({
             element: 'div',
             class: 'totalCases-bar',
             id: `${item.CountryCode}-total-cases-bar`
         });
-        let newCasesContainer = webElement({
+        let newCasesContainer = WebElement({
             element: 'div',
             class: 'newCases-barContainer',
         })
-        let newCasesBar = webElement({
+        let newCasesBar = WebElement({
             element: 'div',
             class: 'newCases-bar',
             id: `${item.CountryCode}-new-cases-bar`
         });
-        let regionContainer = webElement({
+        let regionContainer = WebElement({
             element: 'div',
             class: 'region-container'
         })
-        let fatalityContainer = webElement({
+        let fatalityContainer = WebElement({
             element: 'div',
             class: 'fatality-container'
         })
-        let fatalityIndicator = webElement({
+        let fatalityIndicator = WebElement({
             element: 'div',
             class: 'fatality-indicator',
             id: `${item.CountryCode}-fatality-indicator`
@@ -117,13 +117,13 @@ export default function TableView(data) {
 }
 
 function createHeader(fields = null) {
-	let header = webElement({element:'div', class: 'header'});
+	let header = WebElement({element:'div', class: 'header'});
 	header.append(
-		webElement({element: 'div', class: 'header-text', textContent: 'Country'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
-		webElement({element: 'div', class: 'header-text', textContent: 'Region'})
+		WebElement({element: 'div', class: 'header-text', textContent: 'Country'}),
+		WebElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),
+		WebElement({element: 'div', class: 'header-text', textContent: 'New Cases'}),
+		WebElement({element: 'div', class: 'header-text', textContent: 'Fatality'}),
+		WebElement({element: 'div', class: 'header-text', textContent: 'Region'})
 	);
 	
 	return header;

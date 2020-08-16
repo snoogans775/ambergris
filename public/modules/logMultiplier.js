@@ -1,16 +1,16 @@
-class logMultiplier {
+class LogMultiplier {
     constructor(name, element) {
         this.name = name;
         this.element = element;
     }
 
     createLogMultiplier {
-        let logMultiplierContainer = webElement({
+        let logMultiplierContainer = WebElement({
             element: 'div',
             class: 'log-multiplier-container',
             id: 'log-multiplier-container' 
         })
-        let logMultiplierIndicator = webElement({
+        let logMultiplierIndicator = WebElement({
             element: 'div',
             class: 'generic-indicator',
             id: 'log-multiplier-indicator',
@@ -85,35 +85,3 @@ let assignEventListeners = () => {
         indicator.style.paddingLeft = leftOffset;
     }
 }
-
-/* TO BE REFACTORED TO CLASS
-	let multiplier = document.querySelector('#log-multiplier-container');
-	let multiplierIndicator = document.querySelector('#log-multiplier-indicator');
-
-	//Create unique attribute for width of slider
-	multiplierIndicator.absoluteWidth = multiplierIndicator.clientWidth;
-
-	//Control focus on slider
-	multiplierIndicator.addEventListener('mousedown', focusSlider);
-	multiplier.addEventListener('mouseup', removeFocusSlider);
-	multiplier.addEventListener('mouseout', removeFocusSlider);
-
-	//Move slider indicator
-    multiplier.addEventListener('mousemove', moveIndicator);
-
-    //Custom event to update all indicators and bars
-let sliderMoveEvent = (value = 1) => {
-	let slidermove = new CustomEvent(
-		'slidermove',
-		{
-			detail: {
-				value: value
-			},
-			bubbles: true,
-			cancelable: true
-		}
-	);
-	
-	return slidermove;
-}
-    */

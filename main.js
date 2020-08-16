@@ -9,11 +9,12 @@ const helmet = require('helmet');
 
 //Production port configuration
 const serverPort = process.env.PORT || 3000;
+const filepath = __dirname + '/public';
 
 //Initialize express server
 const app = express();
 app.listen(serverPort, () => console.log(`listening @ ${serverPort}` ));
-app.use(express.static('public'));
+app.use(express.static(filepath));
 app.use(express.json({limit: '1mb'}));
 app.use(favicon(path.join(__dirname + 'public', 'favicon.ico')));
 app.use( helmet() );

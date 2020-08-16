@@ -8,8 +8,8 @@
 
 import * as Get from './modules/requests.js';
 import TableView from './modules/TableView.js';
-import webElement from './modules/webElement.js';
-import UI from './modules/ui.js';
+import Header from './modules/Header.js';
+import UI from './modules/UI.js';
 import './modules/nouislider.min.js';
 
 const display = async () => {
@@ -23,8 +23,7 @@ const display = async () => {
 	};
 	
 	//Render title
-	let head = webElement({element: 'h1', textContent: 'Ambergris'});
-	let subtitle = webElement({element: 'p', textContent: 'Covid-19 Data Tracker'});
+	let header = Header('public');
 
 	//Create UI
 	let ui = UI(dataBundle);
@@ -34,8 +33,7 @@ const display = async () => {
 
 	//Put everything together
 	let root = document.querySelector('#root');
-	root.append(head);
-	root.append(subtitle);
+	root.append(header);
 	root.append(ui);
 	root.append(table);
 }

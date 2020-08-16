@@ -1,5 +1,5 @@
 import * as EventHandler from './events.js';
-import webElement from './webelement.js';
+import WebElement from './WebElement.js';
 
 export default function ui(data) {
     //Find the data we need from the bundle
@@ -10,7 +10,7 @@ export default function ui(data) {
         console.error(err);
     }
 
-	let uiContainer = webElement({element: 'div', id: 'ui-container'});
+	let uiContainer = WebElement({element: 'div', id: 'ui-container'});
     //Create region selector
     let regionWidget = regionSelector(countryDetails);
     //Create logarithmic slider
@@ -28,18 +28,18 @@ export default function ui(data) {
 }
 
 function logarithmicSlider() {
-    let container = webElement({
+    let container = WebElement({
         element: 'div',
         class: 'ui-element'
     });
 
-	let sliderLabel = webElement({
+	let sliderLabel = WebElement({
 		element: 'div', 
 		class: 'ui-element',
 		textContent: 'Expand Values'
     });
     //Create slider to multiply values
-	let logSlider = webElement({element: 'div',id: 'logSlider'});
+	let logSlider = WebElement({element: 'div',id: 'logSlider'});
 	//Configure slider
 	noUiSlider.create(logSlider, {
 		start: [1],
@@ -62,18 +62,18 @@ function logarithmicSlider() {
 
 function regionSelector(data) {
     //The data is the countryData object
-    let container = webElement({
+    let container = WebElement({
         element: 'div',
         class: 'ui-element'
     });
 
-	let regionLabel = webElement({
+	let regionLabel = WebElement({
 		element: 'div', 
 		id: 'region-selector-label',
 		textContent: 'Region'
     });
     
-	let selector = webElement({
+	let selector = WebElement({
         element: 'select', 
         id: 'region-selector'
     });
@@ -82,14 +82,14 @@ function regionSelector(data) {
 	regions.map(region => {
         let option = {};
         if( region != '') {
-            option =  webElement({
+            option =  WebElement({
                 element: 'option',
                 value: region,
                 textContent: region
             });
         }
         else {
-            option =  webElement({
+            option =  WebElement({
                 element: 'option',
                 value: 'Global',
                 textContent: 'Global'

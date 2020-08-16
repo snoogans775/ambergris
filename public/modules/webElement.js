@@ -1,5 +1,5 @@
-//Custom webElement Creator
-export default function webElement(obj) {
+//Custom web element creator
+export default function WebElement(obj) {
 	//Create new element
 	let ele = document.createElement(obj.element);
 	//Assign attributes for all correctly named object keys

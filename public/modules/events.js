@@ -21,49 +21,76 @@ export function bind(element) {
 }
 
 function dispatchRegionChange(event) {
-	let table = document.querySelector('#country-table');
-	//event.target.value is the selected region
-	let regionChange = regionChangeEvent(event.target.value);
-	table.dispatchEvent(regionChange);
+	try {
+		let table = document.querySelector('#country-table');
+		//event.target.value is the selected region
+		let regionChange = regionChangeEvent(event.target.value);
+		table.dispatchEvent(regionChange);
+	} catch(err) {
+		console.error(
+			`Dispatch Error: The table could not be found.\n
+			The selector returned: ${table}`
+		)
+	}
 
 }
 
 function filterTable(event) {
 	//Not a pure function, could be refactored to pass an
 	//object to a newly rendered TableView
-	console.log(event);
-	let table = event.target;
-	let elements = table.children;
-	for( let element of elements ) {
-		if (element === null) continue;
-		if (element.className != 'entry') continue;
+	try {
+		let table = event.target;
+		let elements = table.children;
+		for( let element of elements ) {
+			if (element === null) continue;
+			if (element.className != 'entry') continue;
 
-		let countryRegion = element.children[5].innerText;
-		console.log(event.detail.region);
-		if (event.detail.region == 'Global') {
-			element.style.display = 'grid';
-		} else if (countryRegion != event.detail.region) {
-			element.style.display = 'None';
-		} else {
-			element.style.display = 'grid';
-		}
-	};
+			let countryRegion = element.children[5].innerText;
+			console.log(event.detail.region);
+			if (event.detail.region == 'Global') {
+				element.style.display = 'grid';
+			} else if (countryRegion != event.detail.region) {
+				element.style.display = 'None';
+			} else {
+				element.style.display = 'grid';
+			}
+		};
+	} catch(err) {
+		console.error(
+			`Handler Error: The table could not be updated.\n
+			The event handler returned ${table}.`
+		)
+	}
 	
 
 }
 
 function updateIndicators(event) {
-    
-	//Update indicators
-	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
-	for(let indicator of fatalityIndicators){
-		updateFatality(indicator, event.detail.value);
+    try {
+		//Update indicators
+		let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
+		for(let indicator of fatalityIndicators){
+			updateFatality(indicator, event.detail.value);
+		}
+	} catch(err) {
+		console.error(
+			`Handler Error: The indicators could not be updated.\n
+			The selectors returned: ${fatalityIndicators}`
+		)
 	}
-	//Update bars
-	let totalCasesBars = document.querySelectorAll('.totalCases-bar, .newCases-bar');
-	for(let bar of totalCasesBars){
-		updateBar(bar, event.detail.value);
+	try {
+		//Update bars
+		let casesBars = document.querySelectorAll('.totalCases-bar, .newCases-bar');
+		for(let bar of casesBars){
+			updateBar(bar, event.detail.value);
+		}
+	} catch(err) {
+		console.error(
+			`Handler Error: The bar elements could not be updated.\n
+			The selectors returned: ${casesBars}`
+		)
 	}
+
 }
 
 function updateFatality(element, value) {

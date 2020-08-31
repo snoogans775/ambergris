@@ -33,5 +33,6 @@ help out. The following features would be nice:
 - A more universal wealth disparity indicator, GINI is about 19 countries -
 - ElasticSearch for comparisons -
 - Adjustable fields for bars/indicators -
+- Modular bars with editable attributes -
 - React components -
 

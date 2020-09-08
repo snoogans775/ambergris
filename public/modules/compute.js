@@ -1,9 +1,12 @@
 //Computation functions//
+
+//Convert value to percent
 export function percent(value, total) {
 	let result = Math.ceil( (value / total) * 100 );
 	return result;
 }
 
+//Find max in dataset
 export function max(data, filter) {
 	let max = 0;
 	try {
@@ -17,6 +20,7 @@ export function max(data, filter) {
 	}
 }
 
+//Calculate natural log of value
 export function naturalLog(value, multiplier = 1) {
 	return ( Math.log(value) * multiplier ) + 0.5;
 }

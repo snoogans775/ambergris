@@ -1,6 +1,6 @@
 //Computation functions//
 export function percent(value, total) {
-	let result = Math.ceil( (value / total) * 100 );
+	const result = Math.ceil( (value / total) * 100 );
 	return result;
 }
 

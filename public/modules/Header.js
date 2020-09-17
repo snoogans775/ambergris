@@ -2,20 +2,21 @@ import WebElement from './WebElement.js';
 
 export default function Header(context) {
     //'public' is the only context 08-16-2020
-    let container = WebElement({
+    const container = WebElement({
         element: 'div',
         class: 'page-header'
     });
-    let head = WebElement({
+    const head = WebElement({
         element: 'h1', 
         textContent: 'Ambergris'
     });
-    let subtitle = WebElement({
+    const subtitle = WebElement({
         element: 'p', 
         textContent: 'Covid-19 Data Tracker'
     });
 
-    container.appendChild(head, subtitle);
+    container.appendChild(head);
+    container.appendChild(subtitle);
 
     return container;
 

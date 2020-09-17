@@ -22,9 +22,9 @@ export function bind(element) {
 
 function dispatchRegionChange(event) {
 	try {
-		let table = document.querySelector('#country-table');
+		const table = document.querySelector('#country-table');
 		//event.target.value is the selected region
-		let regionChange = regionChangeEvent(event.target.value);
+		const regionChange = regionChangeEvent(event.target.value);
 		table.dispatchEvent(regionChange);
 	} catch(err) {
 		console.error(
@@ -39,13 +39,13 @@ function filterTable(event) {
 	//Not a pure function, could be refactored to pass an
 	//object to a newly rendered TableView
 	try {
-		let table = event.target;
-		let elements = table.children;
+		const table = event.target;
+		const elements = table.children;
 		for( let element of elements ) {
 			if (element === null) continue;
 			if (element.className != 'entry') continue;
 
-			let countryRegion = element.children[5].innerText;
+			const countryRegion = element.children[5].innerText;
 			console.log(event.detail.region);
 			if (event.detail.region == 'Global') {
 				element.style.display = 'grid';
@@ -68,7 +68,7 @@ function filterTable(event) {
 function updateIndicators(event) {
     try {
 		//Update indicators
-		let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
+		const fatalityIndicators = document.querySelectorAll('.fatality-indicator');
 		for(let indicator of fatalityIndicators){
 			updateFatality(indicator, event.detail.value);
 		}
@@ -80,7 +80,7 @@ function updateIndicators(event) {
 	}
 	try {
 		//Update bars
-		let casesBars = document.querySelectorAll('.totalCases-bar, .newCases-bar');
+		const casesBars = document.querySelectorAll('.totalCases-bar, .newCases-bar');
 		for(let bar of casesBars){
 			updateBar(bar, event.detail.value);
 		}
@@ -94,18 +94,18 @@ function updateIndicators(event) {
 }
 
 function updateFatality(element, value) {
-	let indicator = element;
-	let multiplier = Compute.naturalLog(value, DAMPENER);
-	let adjustedValue = Compute.naturalLog(indicator.value, multiplier);
+	const indicator = element;
+	const multiplier = Compute.naturalLog(value, DAMPENER);
+	const adjustedValue = Compute.naturalLog(indicator.value, multiplier);
 	
 	//Update indicator
 	indicator.style.marginLeft = `${adjustedValue}%`;
 }
 
 function updateBar(element, value) {
-	let bar = element;
-	let multiplier = Compute.naturalLog(value, DAMPENER);
-	let adjustedValue = Compute.naturalLog(bar.value, multiplier);
+	const bar = element;
+	const multiplier = Compute.naturalLog(value, DAMPENER);
+	const adjustedValue = Compute.naturalLog(bar.value, multiplier);
 	
 	//Update indicator
 	bar.style.width = `${adjustedValue}%`;
@@ -113,7 +113,7 @@ function updateBar(element, value) {
 
 //Custom event to update all indicators and bars
 function sliderMoveEvent(value = 1) {
-	let slidermove = new CustomEvent(
+	const slidermove = new CustomEvent(
 		'slidermove',
 		{
 			detail: {
@@ -129,7 +129,7 @@ function sliderMoveEvent(value = 1) {
 
 //Custom event to update all indicators and bars
 function regionChangeEvent(region) {
-	let regionChange = new CustomEvent(
+	const regionChange = new CustomEvent(
 		'regionchange',
 		{
 			detail: {

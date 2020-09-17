@@ -23,16 +23,16 @@ const display = async () => {
 	};
 	
 	//Render title
-	let header = Header('public');
+	const header = Header('public');
 
 	//Create UI
-	let ui = UI(dataBundle);
+	const ui = UI(dataBundle);
 
 	//Create table
-	let table = TableView(dataBundle);
+	const table = TableView(dataBundle);
 
 	//Put everything together
-	let root = document.querySelector('#root');
+	const root = document.querySelector('#root');
 	root.append(header);
 	root.append(ui);
 	root.append(table);

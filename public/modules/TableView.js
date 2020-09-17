@@ -9,8 +9,8 @@ export default function TableView(data) {
     const countryDetails = data['countryDetails'];
     
     //Create table
-    let header = createHeader();
-    let container = WebElement({
+    const header = createHeader();
+    const container = WebElement({
         element: 'div', 
         class: 'entry-container',
         id: 'country-table'
@@ -19,7 +19,7 @@ export default function TableView(data) {
 
     // Create contents of current entry
     for (let item of worldData.Countries ) {
-        let entry = WebElement({
+        const entry = WebElement({
             element: 'div', 
             class: 'entry',
             id: `${item.CountryCode}-entry`
@@ -73,25 +73,25 @@ export default function TableView(data) {
     
     //Get source image for flag
     //Slight differences in naming convention of country code
-    let flag = flagSources.filter( c => c.countryCode == item.CountryCode);
+    const flag = flagSources.filter( c => c.countryCode == item.CountryCode);
     if (flag) flagImg.src = flag[0].flagSource;
     
     //Convert total cases to a percentage of highest caseload country
-    let totalCases = Compute.percent(item.TotalConfirmed, MAX_TOTAL_CASES);
+    const totalCases = Compute.percent(item.TotalConfirmed, MAX_TOTAL_CASES);
     totalCasesBar.value = totalCases;
     totalCasesBar.style.width = `${totalCases}%`;
     
     //Convert total cases to a percentage of highest caseload country
-    let newCases = Compute.percent(item.NewConfirmed, MAX_NEW_CASES);
+    const newCases = Compute.percent(item.NewConfirmed, MAX_NEW_CASES);
     newCasesBar.value = newCases;
     newCasesBar.style.width = `${newCases}%`;
     
     //Show region
-    let country = countryDetails.filter( c => c.alpha2Code == item.CountryCode);
+    const country = countryDetails.filter( c => c.alpha2Code == item.CountryCode);
     regionContainer.textContent = country[0].region;
     
     //Place fatality indicator
-    let fatality = Compute.fatality(item);
+    const fatality = Compute.fatality(item);
     fatalityIndicator.value = fatality;
     fatalityIndicator.style.marginLeft = `${fatality}%`;
 
@@ -117,7 +117,7 @@ export default function TableView(data) {
 }
 
 function createHeader(fields = null) {
-	let header = WebElement({element:'div', class: 'header'});
+	const header = WebElement({element:'div', class: 'header'});
 	header.append(
 		WebElement({element: 'div', class: 'header-text', textContent: 'Country'}),
 		WebElement({element: 'div', class: 'header-text', textContent: 'Total Cases'}),

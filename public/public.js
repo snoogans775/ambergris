@@ -6,6 +6,185 @@
 // OECD GINI scores
 // Transparency International
 
+//Convert value to percent
+function percent(value, total) {
+	const result = Math.ceil( (value / total) * 100 );
+	return result;
+}
+
+//Find max in dataset
+function max(data, filter) {
+	let max = 0;
+	try {
+		for( let item of data ) {
+			if (filter(item) > max) {max = filter(item)};
+		}
+		return max;
+		
+	} catch (err) {
+		console.error(err);
+	}
+}
+
+//Calculate natural log of value
+function naturalLog(value, multiplier = 1) {
+	return ( Math.log(value) * multiplier ) + 0.5;
+}
+
+function fatality(countryObject) {
+	//Return a decimal value of country fatality rate
+	try {
+		//percent() is an export in this file, dangerous
+		let fatality = percent(countryObject.TotalDeaths, countryObject.TotalConfirmed);
+		let result = Math.ceil(fatality);
+		return result;
+		
+	} catch (err) {
+		console.error(err);
+	}
+}
+
+function bind(element) {
+    switch(element.id) {
+    case 'logSlider':
+        element.noUiSlider.on('slide', function (values, handle) {
+            var event = sliderMoveEvent(values[handle]);
+            document.dispatchEvent(event);
+        })
+        document.addEventListener('slidermove', e => updateIndicators(e));
+        break;
+    case 'region-selector':
+        element.addEventListener('change', e => dispatchRegionChange(e));
+		break;
+	case 'country-table':
+		element.addEventListener('regionchange', e => filterTable(e));
+    }
+}
+
+function dispatchRegionChange(event) {
+	try {
+		const table = document.querySelector('#country-table');
+		//event.target.value is the selected region
+		const regionChange = regionChangeEvent(event.target.value);
+		table.dispatchEvent(regionChange);
+	} catch(err) {
+		console.error(
+			`Dispatch Error: The table could not be found.\n
+			The selector returned: ${table}`
+		)
+	}
+
+}
+
+function filterTable(event) {
+	//Not a pure function, could be refactored to pass an
+	//object to a newly rendered TableView
+	try {
+		const table = event.target;
+		const elements = table.children;
+		for( let element of elements ) {
+			if (element === null) continue;
+			if (element.className != 'entry') continue;
+
+			const countryRegion = element.children[5].innerText;
+			console.log(event.detail.region);
+			if (event.detail.region == 'Global') {
+				element.style.display = 'grid';
+			} else if (countryRegion != event.detail.region) {
+				element.style.display = 'None';
+			} else {
+				element.style.display = 'grid';
+			}
+		};
+	} catch(err) {
+		console.error(
+			`Handler Error: The table could not be updated.\n
+			The event handler returned ${table}.`
+		)
+	}
+	
+
+}
+
+function updateIndicators(event) {
+	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
+	let casesBars = document.querySelectorAll('.totalCases-bar, .newCases-bar');
+
+    try {
+		//Update indicators
+		for(let indicator of fatalityIndicators){
+			updateFatality(indicator, event.detail.value);
+		}
+	} catch(err) {
+		console.error(
+			`Handler Error: The indicators could not be updated.\n
+			The selectors returned: ${fatalityIndicators}`
+		)
+	}
+	try {
+		//Update bars
+		for(let bar of casesBars){
+			updateBar(bar, event.detail.value);
+		}
+	} catch(err) {
+		console.error(
+			`Handler Error: The bar elements could not be updated.\n
+			The selectors returned: ${casesBars}`
+		)
+	}
+
+}
+
+function updateFatality(element, value) {
+	const indicator = element;
+	const multiplier = naturalLog(value, DAMPENER);
+	const adjustedValue = naturalLog(indicator.value, multiplier);
+	
+	//Update indicator
+	indicator.style.marginLeft = `${adjustedValue}%`;
+}
+
+function updateBar(element, value) {
+	const bar = element;
+	const multiplier = naturalLog(value, DAMPENER);
+	const adjustedValue = naturalLog(bar.value, multiplier);
+	
+	//Update indicator
+	bar.style.width = `${adjustedValue}%`;
+}
+
+//Custom event to update all indicators and bars
+function sliderMoveEvent(value = 1) {
+	const slidermove = new CustomEvent(
+		'slidermove',
+		{
+			detail: {
+				value: value
+			},
+			bubbles: true,
+			cancelable: true
+		}
+	);
+	
+	return slidermove;
+}
+
+//Custom event to update all indicators and bars
+function regionChangeEvent(region) {
+	const regionChange = new CustomEvent(
+		'regionchange',
+		{
+			detail: {
+				region: region
+			},
+			bubbles: true,
+			cancelable: true
+		}
+	);
+	
+	return regionChange;
+}
+
 //Requests made to server//
  const flags = async (countryCode) => {
 	const response = await fetch('/flags');
@@ -107,8 +286,8 @@
         })
 
     //Constants for use in calculation
-    const MAX_TOTAL_CASES = Compute.max(worldData.Countries, c => c.TotalConfirmed);
-    const MAX_NEW_CASES = Compute.max(worldData.Countries, c => c.NewConfirmed);
+    const MAX_TOTAL_CASES = max(worldData.Countries, c => c.TotalConfirmed);
+    const MAX_NEW_CASES = max(worldData.Countries, c => c.NewConfirmed);
 
     //Style elements //
     
@@ -118,12 +297,12 @@
     if (flag) flagImg.src = flag[0].flagSource;
     
     //Convert total cases to a percentage of highest caseload country
-    const totalCases = Compute.percent(item.TotalConfirmed, MAX_TOTAL_CASES);
+    const totalCases = percent(item.TotalConfirmed, MAX_TOTAL_CASES);
     totalCasesBar.value = totalCases;
     totalCasesBar.style.width = `${totalCases}%`;
     
     //Convert total cases to a percentage of highest caseload country
-    const newCases = Compute.percent(item.NewConfirmed, MAX_NEW_CASES);
+    const newCases = percent(item.NewConfirmed, MAX_NEW_CASES);
     newCasesBar.value = newCases;
     newCasesBar.style.width = `${newCases}%`;
     
@@ -132,9 +311,9 @@
     regionContainer.textContent = country[0].region;
     
     //Place fatality indicator
-    const fatality = Compute.fatality(item);
-    fatalityIndicator.value = fatality;
-    fatalityIndicator.style.marginLeft = `${fatality}%`;
+    const fatalityIndex = fatality(item);
+    fatalityIndicator.value = fatalityIndex;
+    fatalityIndicator.style.marginLeft = `${fatalityIndex}%`;
 
     //Construct the pretty bar graphs
     totalCasesContainer.appendChild(totalCasesBar);
@@ -152,7 +331,7 @@
     );
     container.append(entry);
     }
-    EventHandler.bind(container);
+    bind(container);
 
     return container;
 }
@@ -191,7 +370,7 @@ function createHeader(fields = null) {
     return container;
 }
 
- function ui(data) {
+function createUI(data) {
     //Find the data we need from the bundle
     let countryDetails = null;
     try {
@@ -211,8 +390,8 @@ function createHeader(fields = null) {
     uiContainer.appendChild(logSlider);
 
 	//Bind event handlers
-    EventHandler.bind(regionWidget);
-    EventHandler.bind(logSlider);
+    bind(regionWidget);
+    bind(logSlider);
 
 	return uiContainer;
 }
@@ -241,7 +420,7 @@ function logarithmicSlider() {
     });
 
     //Bind event handler
-    EventHandler.bind(logSlider);
+    bind(logSlider);
 
     //Put it all together
     container.appendChild(sliderLabel);
@@ -291,7 +470,7 @@ function regionSelector(data) {
     });
 
     //Bind event handler
-    EventHandler.bind(selector);
+    bind(selector);
 
     //Put it all together
     container.appendChild(regionLabel);
@@ -326,17 +505,17 @@ const display = async () => {
 	};
 	
 	//Render title
-	const header = createHeader('public');
+	const head = header('public');
 
 	//Create UI
-	let ui = ui(dataBundle);
+	const ui = createUI(dataBundle);
 
 	//Create table
 	const table = tableView(dataBundle);
 
 	//Put everything together
 	const root = document.querySelector('#root');
-	root.append(header);
+	root.append(head);
 	root.append(ui);
 	root.append(table);
 }

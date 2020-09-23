@@ -149,3 +149,7 @@ p {
 	margin-top: 0.2em;
 	max-width: 96%;
 }
+
+#logSlider {
+	width: 100px;
+}

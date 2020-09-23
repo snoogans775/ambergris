@@ -8,8 +8,8 @@
 
 import * as Get from './modules/requests.js';
 import TableView from './modules/TableView.js';
-import Header from './modules/Header.js';
-import UI from './modules/UI.js';
+import Header from './modules/header.js';
+import UI from './modules/ui.js';
 import './modules/nouislider.min.js';
 
 const display = async () => {

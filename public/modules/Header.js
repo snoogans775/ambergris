@@ -19,5 +19,4 @@ export default function Header(context) {
     container.appendChild(subtitle);
 
     return container;
-
 }

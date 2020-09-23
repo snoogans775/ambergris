@@ -1,4 +1,4 @@
-import * as Compute from './compute.js';
+import * as Compute from './Compute.js';
 
 const DAMPENER = 5; //Used for naturalLog computation
 

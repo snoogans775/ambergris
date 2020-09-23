@@ -1,6 +1,6 @@
 import WebElement from './WebElement.js';
-import * as EventHandler from './events.js';
-import * as Compute from './compute.js';
+import * as EventHandler from './Events.js';
+import * as Compute from './Compute.js';
 
 export default function TableView(data) {
     //Data constants

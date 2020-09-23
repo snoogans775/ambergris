@@ -7,7 +7,7 @@
 // Transparency International
 
 import * as Get from './modules/requests.js';
-import TableView from './modules/TableView.js';
+import TableView from './modules/tableView.js';
 import Header from './modules/header.js';
 import UI from './modules/ui.js';
 import './modules/nouislider.min.js';

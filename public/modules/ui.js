@@ -1,4 +1,4 @@
-import * as EventHandler from './events.js';
+import * as EventHandler from './Events.js';
 import WebElement from './WebElement.js';
 
 export default function ui(data) {

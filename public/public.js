@@ -6,6 +6,9 @@
 // OECD GINI scores
 // Transparency International
 
+//Contants
+const DAMPENER = 5;
+
 //Convert value to percent
 function percent(value, total) {
 	const result = Math.ceil( (value / total) * 100 );
@@ -109,28 +112,13 @@ function filterTable(event) {
 function updateIndicators(event) {
 	let fatalityIndicators = document.querySelectorAll('.fatality-indicator');
 	let casesBars = document.querySelectorAll('.totalCases-bar, .newCases-bar');
-
-    try {
-		//Update indicators
-		for(let indicator of fatalityIndicators){
-			updateFatality(indicator, event.detail.value);
-		}
-	} catch(err) {
-		console.error(
-			`Handler Error: The indicators could not be updated.\n
-			The selectors returned: ${fatalityIndicators}`
-		)
+	//Update indicators
+	for(let indicator of fatalityIndicators){
+		updateFatality(indicator, event.detail.value);
 	}
-	try {
-		//Update bars
-		for(let bar of casesBars){
-			updateBar(bar, event.detail.value);
-		}
-	} catch(err) {
-		console.error(
-			`Handler Error: The bar elements could not be updated.\n
-			The selectors returned: ${casesBars}`
-		)
+	//Update bars
+	for(let bar of casesBars){
+		updateBar(bar, event.detail.value);
 	}
 
 }

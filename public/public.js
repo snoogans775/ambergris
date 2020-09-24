@@ -399,10 +399,10 @@ function logarithmicSlider() {
 	let logSlider = webElement({element: 'div',id: 'logSlider'});
 	//Configure slider
 	noUiSlider.create(logSlider, {
-		start: [1],
+		start: [2],
 		connect: true,
 		range: {
-			'min': 1,
+			'min': 2,
 			'max': 50
 		}
     });

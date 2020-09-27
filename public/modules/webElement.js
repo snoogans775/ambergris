@@ -11,5 +11,9 @@ export default function WebElement(obj) {
 	
 	//Assign content of element
 	ele.textContent = obj.textContent;
+
+	//Clean up the element attribute
+	ele.removeAttribute("element");
+
 	return ele;
 }

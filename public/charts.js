@@ -1,4 +1,3 @@
-//import * as d3 from "./modules/d3.min.js"
 import WebElement from "./modules/WebElement.js";
 
 let svgContainer = new WebElement({
@@ -9,13 +8,32 @@ let svgContainer = new WebElement({
 
 let rect = new WebElement({
     element: "rect",
-    x: "0",
+    x: "500",
     y: "0",
-    fill: "yellow"
+    width: "300",
+    height: "200",
+    fill: "red"
 });
 
-const root = document.querySelector('#root');
-svgContainer.appendChild(rect);
-root.append(svgContainer);
+let test = new WebElement({
+    element: "div",
+    class: "testy"
+});
 
-console.log(d3);
+//Add dummy data to to the navbar
+let pages = ['Explore', 'Global', 'United States'];
+
+//Add values to navbar
+var navbar = d3.select('#navbar')
+    .selectAll('div')
+    .data(pages);
+
+navbar.enter()
+    .append('div')
+    .merge(navbar)
+    .text( d => {return d;});
+
+//Add the svg to the root element
+svgContainer.appendChild(rect);
+
+d3.select('#content').append(test);

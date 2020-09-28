@@ -33,7 +33,4 @@ navbar.enter()
     .merge(navbar)
     .text( d => {return d;});
 
-//Add the svg to the root element
-svgContainer.appendChild(rect);
-
-d3.select('#content').append(test);
+d3.select('#content').text("test");

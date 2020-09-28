@@ -1,7 +1,7 @@
 import WebElement from "./modules/WebElement.js";
 import * as THREE from './modules/three/build/three.module.js';
 
-var camera, scene, light, renderer;
+var camera, scene, light, renderer, textureLoader;
 var geometry, material, earthMesh;
  
 init();
@@ -21,14 +21,15 @@ function init() {
     // Create mesh for earth texture
     earthMesh = THREE
 
+    // Load textures
+    textureLoader = new THREE.TextureLoader();
+
     geometry = new THREE.SphereGeometry(0.5, 32, 32);
-    material = new THREE.MeshPhongMaterial();
+    material = new THREE.MeshPhongMaterial({
+        map: textureLoader.load('img/earthmap1k.jpg'),
+    });
     earthMesh = new THREE.Mesh(geometry, material);
     scene.add(earthMesh);
-
-    material.map = THREE.ImageUtils.loadTexture('img/earthmap1k.jpg');
-
- 
 }
  
 function draw() {
@@ -37,6 +38,8 @@ function draw() {
     });
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
+
+    renderer.render( scene, camera );
 }
 
 let svgContainer = new WebElement({

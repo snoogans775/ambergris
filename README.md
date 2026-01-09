@@ -21,9 +21,7 @@ All public facing JavaScript, CSS, and HTML files are in /public.
 
 ## Notes
 - Vanilla JS -
-The GUI is built on vanilla JavaScript with ES6 syntax. This was intended to build a f
-lexible object-like system in a server-less architecture. A React / Redux version of 
-this app will be built soon.
+The GUI is built on vanilla JavaScript with ES6 syntax. This was intended to build a flexible object-like system in a server-less architecture.
 
 - Next Steps -
 Please contact Kevin Fredericks at kfrednv@gmail.com if you would like to 
